@@ -1,8 +1,8 @@
-Require Import Coq.NArith.NArith.
 Require Import Coq.ZArith.ZArith.
 
+Local Open Scope Z.
+
 Module Date.
-  Local Open Scope Z.
 
   Record t : Set := New {
     year : Z;
@@ -48,38 +48,59 @@ Module Date.
     month := 1;
     day := 1 |}.
 
-  Definition of_epoch_day (n : Z) : t :=
+  Definition of_epoch (n : Z) : t :=
     of_Julian_day true (n + to_Julian_day true epoch).
 
-  Definition to_epoch_day (date : t) : Z :=
+  Definition to_epoch (date : t) : Z :=
     to_Julian_day true date - to_Julian_day true epoch.
 
-  Compute of_epoch_day 16365.
+  Compute of_epoch 16365.
 End Date.
 
 Module Time.
-  Local Open Scope N.
-
   Record t : Set := New {
-    hour : N;
-    minute : N;
-    second : N }.
+    hour : Z;
+    minute : Z;
+    second : Z }.
 
-  Definition of_seconds (n : N) : t :=
-    let second := N.modulo n 60 in
+  Definition of_seconds (n : Z) : t :=
+    let second := Z.modulo n 60 in
     let n := n / 60 in
-    let minute := N.modulo n 60 in
+    let minute := Z.modulo n 60 in
     let hour := n / 60 in
     {|
       hour := hour;
       minute := minute;
       second := second |}.
 
-  Definition to_seconds (time : t) : N :=
+  Definition to_seconds (time : t) : Z :=
     second time + 60 * (minute time + 60 * hour time).
 
   Compute of_seconds (to_seconds (New 12 0 0)).
 End Time.
+
+Module Moment.
+  Record t : Set := New {
+    date : Date.t;
+    time : Time.t }.
+
+  Definition seconds_per_day := 60 * 60 * 24.
+
+  Definition of_epoch (n : Z) : t := {|
+    date := Date.of_epoch (n / seconds_per_day);
+    time := Time.of_seconds (Z.modulo n seconds_per_day) |}.
+
+  Definition to_epoch (moment : t) : Z :=
+    seconds_per_day * Date.to_epoch (date moment) + Time.to_seconds (time moment).
+
+  Module Test.
+    Definition now : t := {|
+      date := {| Date.year := 2014; Date.month := 10; Date.day := 22 |};
+      time := {| Time.hour := 10; Time.minute := 26; Time.second := 22 |} |}.
+
+    Compute of_epoch (to_epoch now).
+  End Test.
+End Moment.
 
 (*Module Date.
   (** The number of seconds since the Unix epoch. *)
