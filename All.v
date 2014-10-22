@@ -1,8 +1,9 @@
+Require Import Coq.NArith.NArith.
 Require Import Coq.ZArith.ZArith.
 
-Local Open Scope Z.
-
 Module Date.
+  Local Open Scope Z.
+
   Record t : Set := New {
     year : Z;
     month : Z;
@@ -18,10 +19,10 @@ Module Date.
     | c => c
     end.
 
-  Definition of_julian_day (is_gregorian : bool) (n : Z) : t :=
+  Definition of_Julian_day (is_Gregorian : bool) (n : Z) : t :=
     let a := n + 32044 in
-    let b := if is_gregorian then (4 * a + 3) / 146097 else 0 in
-    let c := if is_gregorian then a - (b * 146097) / 4 else n + 32082 in
+    let b := if is_Gregorian then (4 * a + 3) / 146097 else 0 in
+    let c := if is_Gregorian then a - (b * 146097) / 4 else n + 32082 in
     let d := (4 * c + 3) / 1461 in
     let e := c - (1461 * d) / 4 in
     let m := (5 * e + 2) / 153 in
@@ -30,17 +31,17 @@ Module Date.
       month := m + 3 - 12 * (m / 10);
       year := b * 100 + d - 4800 + m / 10 |}.
 
-  Definition to_julian_day (is_gregorian : bool) (date : t) : Z :=
+  Definition to_Julian_day (is_Gregorian : bool) (date : t) : Z :=
     let a := (14 - month date) / 12 in
     let y := year date + 4800 - a in
     let m := month date + 12 * a - 3 in
-    if is_gregorian then
+    if is_Gregorian then
       day date + (153 * m + 2) / 5 + y * 365 + y / 4 - y / 100 + y / 400 - 32045
     else
       day date + (153 * m + 2) / 5 + y * 365 + y / 4 - 32083.
 
-  Compute of_julian_day true (to_julian_day true (New 2014 10 22)).
-  Compute to_julian_day false (New (-4712) 1 1).
+  Compute of_Julian_day true (to_Julian_day true (New 2014 10 22)).
+  Compute to_Julian_day false (New (-4712) 1 1).
 
   Definition epoch : t := {|
     year := 1970;
@@ -48,13 +49,37 @@ Module Date.
     day := 1 |}.
 
   Definition of_epoch_day (n : Z) : t :=
-    of_julian_day true (n + to_julian_day true epoch).
+    of_Julian_day true (n + to_Julian_day true epoch).
 
   Definition to_epoch_day (date : t) : Z :=
-    to_julian_day true date - to_julian_day true epoch.
+    to_Julian_day true date - to_Julian_day true epoch.
 
   Compute of_epoch_day 16365.
 End Date.
+
+Module Time.
+  Local Open Scope N.
+
+  Record t : Set := New {
+    hour : N;
+    minute : N;
+    second : N }.
+
+  Definition of_seconds (n : N) : t :=
+    let second := N.modulo n 60 in
+    let n := n / 60 in
+    let minute := N.modulo n 60 in
+    let hour := n / 60 in
+    {|
+      hour := hour;
+      minute := minute;
+      second := second |}.
+
+  Definition to_seconds (time : t) : N :=
+    second time + 60 * (minute time + 60 * hour time).
+
+  Compute of_seconds (to_seconds (New 12 0 0)).
+End Time.
 
 (*Module Date.
   (** The number of seconds since the Unix epoch. *)
