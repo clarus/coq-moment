@@ -1,14 +1,20 @@
+(** Date: day in a calendar. *)
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import LString.All.
 
 Local Open Scope Z.
 
+(** A date is a year, a month and a day. There is no enforced bound by the type
+    system for the month and the day number, but values are expected to be in
+    the standard range. The month and day number start at one. A date can be of
+    Julian or Gregorian calendar, depending on the context. *)
 Record t : Set := New {
   year : Z;
   month : Z;
   day : Z }.
 
+(** Compare two dates. *)
 Definition compare (date1 date2 : t) : comparison :=
   match Z.compare (year date1) (year date2) with
   | Eq =>
@@ -19,6 +25,7 @@ Definition compare (date1 date2 : t) : comparison :=
   | c => c
   end.
 
+(** The date of a Julian day, in a Julian or Gregorian calendar. *)
 Definition of_Julian_day (is_Gregorian : bool) (n : Z) : t :=
   let a := n + 32044 in
   let b :=
@@ -39,6 +46,7 @@ Definition of_Julian_day (is_Gregorian : bool) (n : Z) : t :=
     month := m + 3 - 12 * (m / 10);
     year := b * 100 + d - 4800 + m / 10 |}.
 
+(** The Julian day of a date, considering the date as Julian or Gregorian. *)
 Definition to_Julian_day (is_Gregorian : bool) (date : t) : Z :=
   let a := (14 - month date) / 12 in
   let y := year date + 4800 - a in
@@ -52,20 +60,25 @@ Compute of_Julian_day true (to_Julian_day true (New 2014 10 22)).
 Compute to_Julian_day false (New (-4712) 1 1).
 Compute of_Julian_day true 2456952.
 
+(** The Unix epoch (in the Gregorian calendar). *)
 Definition epoch : t := {|
   year := 1970;
   month := 1;
   day := 1 |}.
 
+(** The Gregorian date of a Unix day. *)
 Definition of_epoch (n : Z) : t :=
   of_Julian_day true (n + to_Julian_day true epoch).
 
+(** The Unix day of a Gregorian date. *)
 Definition to_epoch (date : t) : Z :=
   to_Julian_day true date - to_Julian_day true epoch.
 
 Compute of_epoch 16365.
 
+(** Days of the week. *)
 Module WeekDay.
+  (** The finite set of days of the week. *)
   Inductive t : Set :=
   | Sunday | Monday | Tuesday | Wednesday | Thursday | Friday | Saturday.
 
@@ -82,6 +95,7 @@ Module WeekDay.
     | _ => Sunday (* This case should not happen. *)
     end.
 
+  (** The day of the week of a date. *)
   Definition of_date (is_Gregorian : bool) (date : Date.t) : t :=
     let a := (14 - month date) / 12 in
     let y := year date - a in
@@ -93,8 +107,10 @@ Module WeekDay.
 
   Compute of_date true @@ Date.New 2014 10 22.
 
+  (** Pretty-printing. *)
   Module PrettyPrint.
-    Definition long (day : t) : LString.t :=
+    (** The full name of a day of the week (Monday, Tuesday, ...). *)
+    Definition full (day : t) : LString.t :=
       LString.s match day with
       | Sunday => "Sunday"
       | Monday => "Monday"
@@ -105,6 +121,7 @@ Module WeekDay.
       | Saturday => "Saturday"
       end.
 
+    (** The short name of a day of the week (Mon, Tue, ...). *)
     Definition short (day : t) : LString.t :=
       LString.s match day with
       | Sunday => "Sun"
@@ -118,7 +135,9 @@ Module WeekDay.
   End PrettyPrint.
 End WeekDay.
 
+(** The month. *)
 Module Month.
+  (** The finite set of months. *)
   Inductive t : Set :=
   | January | February | March | April | May | June | July
   | August | September | October | November | December.
@@ -141,6 +160,7 @@ Module Month.
     | _ => January (* This case should not happen. *)
     end.
 
+  (** The month of a date. *)
   Definition of_date (date : Date.t) : t :=
     of_Z @@ month date.
 End Month.
