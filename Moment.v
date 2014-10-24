@@ -6,6 +6,7 @@ Require Import LString.All.
 Require "Date".
 Require "Time".
 
+Import ListNotations.
 Local Open Scope Z.
 
 (** A moment is a date and a time. *)
@@ -26,7 +27,7 @@ Definition to_epoch (moment : t) : Z :=
 
 (** Pretty-printing. *)
 Module PrettyPrint.
-  (** The moment in the RFC 1123 format. *)
+  (** The moment in the RFC 1123 format (Sun, 06 Nov 1994 08:49:37 GMT). *)
   Definition rfc1123 (moment : t) : LString.t :=
     Date.PrettyPrint.short_week_day true (date moment) ++ LString.s ", " ++
     Date.PrettyPrint.zero_padded_day (date moment) ++ LString.s " " ++
@@ -36,19 +37,35 @@ Module PrettyPrint.
     Time.PrettyPrint.zero_padded_minute (time moment) ++ LString.s ":" ++
     Time.PrettyPrint.zero_padded_second (time moment) ++ LString.s " " ++
     LString.s "GMT".
-
-(*Require Import Coq.Strings.String.
-Local Open Scope string.
-Compute LString.to_string @@ rfc1123 {|
-  date := Date.New 1994 11 6;
-  time := Time.New 8 49 37 |}.*)
 End PrettyPrint.
 
 (** Tests for this file. *)
 Module Test.
-  (* Definition now : t := {|
-    date := {| Date.year := 2014; Date.month := 10; Date.day := 22 |};
-    time := {| Time.hour := 10; Time.minute := 26; Time.second := 22 |} |}. *)
+  Definition test_of_epoch :
+    List.map of_epoch [0; 1414165237; 1414165239] = [
+      New (Date.New 1970 1 1) (Time.New 0 0 0);
+      New (Date.New 2014 10 24) (Time.New 15 40 37);
+      New (Date.New 2014 10 24) (Time.New 15 40 39)] :=
+    eq_refl.
 
-  (* Compute of_epoch @@ to_epoch now. *)
+  Definition test_to_epoch :
+    List.map to_epoch [
+      New (Date.New 1970 1 1) (Time.New 0 0 0);
+      New (Date.New 2014 10 24) (Time.New 15 40 37);
+      New (Date.New 2014 10 24) (Time.New 15 40 39)] =
+      [0; 1414165237; 1414165239] :=
+    eq_refl.
+
+  Module PrettyPrint.
+    Require Import Coq.Strings.String.
+    Local Open Scope string.
+
+    Definition test_rfc1123 :
+      List.map PrettyPrint.rfc1123 [
+        New (Date.New 1994 11 6) (Time.New 8 49 37);
+        New (Date.New 2014 10 24) (Time.New 15 40 37)] = List.map LString.s [
+        "Sun, 06 Nov 1994 08:49:37 GMT";
+        "Fri, 24 Oct 2014 15:40:37 GMT"] :=
+      eq_refl.
+  End PrettyPrint.
 End Test.
