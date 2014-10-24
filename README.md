@@ -1,8 +1,16 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/watch-48.png) Moment
 Parse, manipulate and pretty-print dates in Coq.
 
-    Moment.PrettyPrint.rfc1123 (Moment.of_epoch 0)
-    ====> Thu, 01 Jan 1970 00:00:00 GMT
+    Require Import Coq.Strings.String.
+    Require Import FunctionNinjas.All.
+    Require Import ListString.All.
+    Require Import Moment.All.
+
+    Compute LString.to_string @@ Moment.PrettyPrint.rfc1123 @@ Moment.of_epoch 0.
+
+gives:
+    
+    "Thu, 01 Jan 1970 00:00:00 GMT"%string
 
 ## Install
 ### With OPAM
