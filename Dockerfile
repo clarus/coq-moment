@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:14.10
 MAINTAINER Guillaume Claret
 
 RUN apt-get update && apt-get upgrade -y
@@ -13,7 +13,7 @@ ENV OPAMJOBS 6
 RUN opam install -y coq
 
 # Dependencies
-RUN v=1 opam repo add coq-stable https://github.com/coq/repo-stable.git
+RUN opam repo add coq-stable https://github.com/coq/repo-stable.git
 RUN opam install -y coq-function-ninjas coq-list-string
 
 # Tools
