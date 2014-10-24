@@ -231,19 +231,19 @@ Module PrettyPrint.
     (if Z.leb 10 (Date.day date) then LString.s "" else LString.s "0") ++
     LString.of_Z 10 2 @@ Date.day date.
 
-  (** The full name of a day of the week (Monday, Tuesday, ...). *)
+  (** The full name of the day of the week (Monday, Tuesday, ...). *)
   Definition full_week_day (is_Gregorian : bool) (date : t) : LString.t :=
     WeekDay.PrettyPrint.full @@ WeekDay.of_date is_Gregorian date.
 
-  (** The short name of a day of the week (Mon, Tue, ...). *)
+  (** The short name of the day of the week (Mon, Tue, ...). *)
   Definition short_week_day (is_Gregorian : bool) (date : t) : LString.t :=
     WeekDay.PrettyPrint.short @@ WeekDay.of_date is_Gregorian date.
 
-  (** The full name of a month (January, February, ...). *)
+  (** The full name of the month (January, February, ...). *)
   Definition full_month (date : t) : LString.t :=
     Month.PrettyPrint.full @@ Month.of_date date.
 
-  (** The short name of a month (Jan, Feb, ...). *)
+  (** The short name of the month (Jan, Feb, ...). *)
   Definition short_month (date : t) : LString.t :=
     Month.PrettyPrint.short @@ Month.of_date date.
 End PrettyPrint.

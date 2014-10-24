@@ -75,10 +75,10 @@ at the beginning of your source files. It will add three new modules:
 * `day (date : t) : LString.t` : The day number.
 * `space_padded_day (date : t) : LString.t` : The day number with space padding.
 * `zero_padded_day (date : t) : LString.t` : The day number with zero padding.
-* `full_week_day (is_Gregorian : bool) (date : t) : LString.t` : The full name of a day of the week (Monday, Tuesday, ...).
-* `short_week_day (is_Gregorian : bool) (date : t) : LString.t` : The short name of a day of the week (Mon, Tue, ...).
-* `full_month (date : t) : LString.t` : The full name of a month (January, February, ...).
-* `short_month (date : t) : LString.t` : The short name of a month (Jan, Feb, ...).
+* `full_week_day (is_Gregorian : bool) (date : t) : LString.t` : The full name of the day of the week (Monday, Tuesday, ...).
+* `short_week_day (is_Gregorian : bool) (date : t) : LString.t` : The short name of the day of the week (Mon, Tue, ...).
+* `full_month (date : t) : LString.t` : The full name of the month (January, February, ...).
+* `short_month (date : t) : LString.t` : The short name of the month (Jan, Feb, ...).
 
 ### Time
 * `t` : A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
