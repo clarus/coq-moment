@@ -1,4 +1,5 @@
 (** Date: day in a calendar. *)
+Require Import Coq.Lists.List.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import LString.All.
@@ -163,7 +164,95 @@ Module Month.
   (** The month of a date. *)
   Definition of_date (date : Date.t) : t :=
     of_Z @@ month date.
+
+  (** Pretty-printing. *)
+  Module PrettyPrint.
+    (** The full name of a month (January, February, ...). *)
+    Definition full (month : t) : LString.t :=
+      LString.s match month with
+      | January => "January"
+      | February => "February"
+      | March => "March"
+      | April => "April"
+      | May => "May"
+      | June => "June"
+      | July => "July"
+      | August => "August"
+      | September => "September"
+      | October => "October"
+      | November => "November"
+      | December => "December"
+      end.
+
+    (** The short name of a month (Jan, Feb, ...). *)
+    Definition short (month : t) : LString.t :=
+      LString.s match month with
+      | January => "Jan"
+      | February => "Feb"
+      | March => "Mar"
+      | April => "Apr"
+      | May => "May"
+      | June => "Jun"
+      | July => "Jul"
+      | August => "Aug"
+      | September => "Sep"
+      | October => "Oct"
+      | November => "Nov"
+      | December => "Dec"
+      end.
+  End PrettyPrint.
 End Month.
+
+(** Pretty-printing. *)
+Module PrettyPrint.
+  (** The year. *)
+  Definition year (date : t) : LString.t :=
+    LString.of_Z 10 10 @@ year date.
+
+  (** The month number. *)
+  Definition month (date : t) : LString.t :=
+    LString.of_Z 10 2 @@ month date.
+
+  (** The month number with space padding. *)
+  Definition space_padded_month (date : t) : LString.t :=
+    (if Z.leb 10 (Date.month date) then LString.s "" else LString.s " ") ++
+    LString.of_Z 10 2 @@ Date.month date.
+
+  (** The month number with zero padding. *)
+  Definition zero_padded_month (date : t) : LString.t :=
+    (if Z.leb 10 (Date.month date) then LString.s "" else LString.s "0") ++
+    LString.of_Z 10 2 @@ Date.month date.
+
+  (** The day number. *)
+  Definition day (date : t) : LString.t :=
+    LString.of_Z 10 2 @@ day date.
+
+  (** The day number with space padding. *)
+  Definition space_padded_day (date : t) : LString.t :=
+    (if Z.leb 10 (Date.day date) then LString.s "" else LString.s " ") ++
+    LString.of_Z 10 2 @@ Date.day date.
+
+  (** The day number with zero padding. *)
+  Definition zero_padded_day (date : t) : LString.t :=
+    (if Z.leb 10 (Date.day date) then LString.s "" else LString.s "0") ++
+    LString.of_Z 10 2 @@ Date.day date.
+
+  (** The full name of a day of the week (Monday, Tuesday, ...). *)
+  Definition full_week_day (is_Gregorian : bool) (date : t) : LString.t :=
+    WeekDay.PrettyPrint.full @@ WeekDay.of_date is_Gregorian date.
+
+  (** The short name of a day of the week (Mon, Tue, ...). *)
+  Definition short_week_day (is_Gregorian : bool) (date : t) : LString.t :=
+    WeekDay.PrettyPrint.short @@ WeekDay.of_date is_Gregorian date.
+
+  (** The full name of a month (January, February, ...). *)
+  Definition full_month (date : t) : LString.t :=
+    Month.PrettyPrint.full @@ Month.of_date date.
+
+  (** The short name of a month (Jan, Feb, ...). *)
+  Definition short_month (date : t) : LString.t :=
+    Month.PrettyPrint.short @@ Month.of_date date.
+End PrettyPrint.
 
 Module Test.
   (* TODO *)

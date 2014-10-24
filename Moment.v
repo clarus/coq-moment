@@ -1,4 +1,5 @@
 (** Moment: a date and a time. *)
+Require Import Coq.Lists.List.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import LString.All.
@@ -23,7 +24,25 @@ Definition of_epoch (n : Z) : t := {|
 Definition to_epoch (moment : t) : Z :=
   seconds_per_day * Date.to_epoch (date moment) + Time.to_seconds (time moment).
 
-(* Fri, 31 Dec 1999 23:59:59 GMT *)
+(** Pretty-printing. *)
+Module PrettyPrint.
+  (** The moment in the RFC 1123 format. *)
+  Definition rfc1123 (moment : t) : LString.t :=
+    Date.PrettyPrint.short_week_day true (date moment) ++ LString.s ", " ++
+    Date.PrettyPrint.zero_padded_day (date moment) ++ LString.s " " ++
+    Date.PrettyPrint.short_month (date moment) ++ LString.s " " ++
+    Date.PrettyPrint.year (date moment) ++ LString.s " " ++
+    Time.PrettyPrint.zero_padded_hour (time moment) ++ LString.s ":" ++
+    Time.PrettyPrint.zero_padded_minute (time moment) ++ LString.s ":" ++
+    Time.PrettyPrint.zero_padded_second (time moment) ++ LString.s " " ++
+    LString.s "GMT".
+
+Require Import Coq.Strings.String.
+Local Open Scope string.
+Compute LString.to_string @@ rfc1123 {|
+  date := Date.New 1994 11 6;
+  time := Time.New 8 49 37 |}.
+End PrettyPrint.
 
 Module Test.
   Definition now : t := {|
