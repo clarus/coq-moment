@@ -248,7 +248,7 @@ Module PrettyPrint.
     Month.PrettyPrint.short @@ Month.of_date date.
 End PrettyPrint.
 
-(** All the tests for the file. *)
+(** Tests for this file. *)
 Module Test.
   Require Import "TestHelpers".
 

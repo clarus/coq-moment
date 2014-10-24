@@ -37,17 +37,18 @@ Module PrettyPrint.
     Time.PrettyPrint.zero_padded_second (time moment) ++ LString.s " " ++
     LString.s "GMT".
 
-Require Import Coq.Strings.String.
+(*Require Import Coq.Strings.String.
 Local Open Scope string.
 Compute LString.to_string @@ rfc1123 {|
   date := Date.New 1994 11 6;
-  time := Time.New 8 49 37 |}.
+  time := Time.New 8 49 37 |}.*)
 End PrettyPrint.
 
+(** Tests for this file. *)
 Module Test.
-  Definition now : t := {|
+  (* Definition now : t := {|
     date := {| Date.year := 2014; Date.month := 10; Date.day := 22 |};
-    time := {| Time.hour := 10; Time.minute := 26; Time.second := 22 |} |}.
+    time := {| Time.hour := 10; Time.minute := 26; Time.second := 22 |} |}. *)
 
-  Compute of_epoch @@ to_epoch now.
+  (* Compute of_epoch @@ to_epoch now. *)
 End Test.

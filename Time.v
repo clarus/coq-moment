@@ -4,6 +4,7 @@ Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import LString.All.
 
+Import ListNotations.
 Local Open Scope Z.
 
 (** A time is an hour, a minute and a second. There is no enforced bound by the
@@ -18,7 +19,8 @@ Definition of_seconds (n : Z) : t :=
   let second := n mod 60 in
   let n := n / 60 in
   let minute := n mod 60 in
-  let hour := n / 60 in
+  let n := n / 60 in
+  let hour := n mod 24 in
   {|
     hour := hour;
     minute := minute;
@@ -27,8 +29,6 @@ Definition of_seconds (n : Z) : t :=
 (** The number of seconds since midnight of a time. *)
 Definition to_seconds (time : t) : Z :=
   second time + 60 * (minute time + 60 * hour time).
-
-Compute of_seconds @@ to_seconds @@ New 12 0 0.
 
 (** Pretty-printing. *)
 Module PrettyPrint.
@@ -75,6 +75,74 @@ Module PrettyPrint.
     LString.of_Z 10 2 @@ Time.second time.
 End PrettyPrint.
 
+(** Tests for this file. *)
 Module Test.
-(* TODO *)
+  Definition test_of_seconds :
+    List.map of_seconds [0; 1414164149; 1414164150] =
+      [New 0 0 0; New 15 22 29; New 15 22 30] :=
+    eq_refl.
+
+  Definition test_to_seconds :
+    List.map to_seconds [New 0 0 0; New 15 22 29; New 15 22 30] =
+      [0; 55349; 55350] :=
+    eq_refl.
+
+  Module PrettyPrint.
+    Require Import Coq.Strings.String.
+    Local Open Scope string.
+
+    Definition test_hour :
+      List.map PrettyPrint.hour
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["0"; "15"; "15"] :=
+      eq_refl.
+
+    Definition test_space_padded_hour :
+      List.map PrettyPrint.space_padded_hour
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s [" 0"; "15"; "15"] :=
+      eq_refl.
+
+    Definition test_zero_padded_hour :
+      List.map PrettyPrint.zero_padded_hour
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["00"; "15"; "15"] :=
+      eq_refl.
+
+    Definition test_minute :
+      List.map PrettyPrint.minute
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["0"; "22"; "22"] :=
+      eq_refl.
+
+    Definition test_space_padded_minute :
+      List.map PrettyPrint.space_padded_minute
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s [" 0"; "22"; "22"] :=
+      eq_refl.
+
+    Definition test_zero_padded_minute :
+      List.map PrettyPrint.zero_padded_minute
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["00"; "22"; "22"] :=
+      eq_refl.
+
+    Definition test_second :
+      List.map PrettyPrint.second
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["0"; "29"; "30"] :=
+      eq_refl.
+
+    Definition test_space_padded_second :
+      List.map PrettyPrint.space_padded_second
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s [" 0"; "29"; "30"] :=
+      eq_refl.
+
+    Definition test_zero_padded_second :
+      List.map PrettyPrint.zero_padded_second
+        [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["00"; "29"; "30"] :=
+      eq_refl.
+  End PrettyPrint.
 End Test.
