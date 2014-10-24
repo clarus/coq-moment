@@ -74,3 +74,7 @@ Module PrettyPrint.
     (if Z.leb 10 (Time.second time) then LString.s "" else LString.s "0") ++
     LString.of_Z 10 2 @@ Time.second time.
 End PrettyPrint.
+
+Module Test.
+(* TODO *)
+End Test.

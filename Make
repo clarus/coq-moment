@@ -3,4 +3,5 @@
 All.v
 Date.v
 Moment.v
+TestHelpers.v
 Time.v

@@ -4,6 +4,7 @@ Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import LString.All.
 
+Import ListNotations.
 Local Open Scope Z.
 
 (** A date is a year, a month and a day. There is no enforced bound by the type
@@ -57,10 +58,6 @@ Definition to_Julian_day (is_Gregorian : bool) (date : t) : Z :=
   else
     day date + (153 * m + 2) / 5 + y * 365 + y / 4 - 32083.
 
-Compute of_Julian_day true (to_Julian_day true (New 2014 10 22)).
-Compute to_Julian_day false (New (-4712) 1 1).
-Compute of_Julian_day true 2456952.
-
 (** The Unix epoch (in the Gregorian calendar). *)
 Definition epoch : t := {|
   year := 1970;
@@ -75,7 +72,6 @@ Definition of_epoch (n : Z) : t :=
 Definition to_epoch (date : t) : Z :=
   to_Julian_day true date - to_Julian_day true epoch.
 
-Compute of_epoch 16365.
 
 (** Days of the week. *)
 Module WeekDay.
@@ -105,8 +101,6 @@ Module WeekDay.
       of_Z ((day date + y + y / 4 - y / 100 + y / 400 + (31 * m) / 12) mod 7)
     else
       of_Z ((5 + day date + y + y / 4 + (31 * m) / 12) mod 7).
-
-  Compute of_date true @@ Date.New 2014 10 22.
 
   (** Pretty-printing. *)
   Module PrettyPrint.
@@ -254,6 +248,188 @@ Module PrettyPrint.
     Month.PrettyPrint.short @@ Month.of_date date.
 End PrettyPrint.
 
+(** All the tests for the file. *)
 Module Test.
-  (* TODO *)
+  Require Import "TestHelpers".
+
+  Definition test_compare :
+    List.map_pair compare [
+      (New 2014 10 10, New 2014 10 10);
+      (New 2014 10 10, New 2012 10 30);
+      (New 2014 10 10, New 2014 10 11)] =
+      [Eq; Gt; Lt] :=
+    eq_refl.
+
+  Definition test_of_Julian_day :
+    List.map_pair of_Julian_day [
+      (true, 2456952);
+      (true, to_Julian_day true @@ New 2003 02 02);
+      (false, to_Julian_day false @@ New 2003 02 02)] = [
+      New 2014 10 21;
+      New 2003 02 02;
+      New 2003 02 02] :=
+    eq_refl.
+
+  Definition test_to_Julian_day :
+    List.map_pair to_Julian_day [
+      (true, New 2014 10 21);
+      (true, of_Julian_day true (-1));
+      (false, of_Julian_day false (-1))] = [
+      2456952;
+      -1;
+      -1] :=
+    eq_refl.
+
+  Definition test_of_epoch :
+    List.map of_epoch [0; 16365] = [New 1970 1 1; New 2014 10 22] := eq_refl.
+
+  Definition test_to_epoch :
+    List.map to_epoch [New 1970 1 1; New 2014 10 22] = [0; 16365] := eq_refl.
+
+  Module WeekDay.
+    Definition test_of_Z :
+      List.map WeekDay.of_Z [0; 7; 3] =
+        [WeekDay.Sunday; WeekDay.Sunday; WeekDay.Wednesday] :=
+      eq_refl.
+
+    Definition test_of_date :
+      List.map_pair WeekDay.of_date [
+        (true, New 2014 10 24);
+        (true, New 2014 10 25);
+        (false, New 0 1 1)] = [
+        WeekDay.Friday;
+        WeekDay.Saturday;
+        WeekDay.Thursday] :=
+      eq_refl.
+
+    Module PrettyPrint.
+      Require Import Coq.Strings.String.
+      Local Open Scope string.
+
+      Definition test_full :
+        List.map WeekDay.PrettyPrint.full
+          [WeekDay.Sunday; WeekDay.Monday; WeekDay.Wednesday] =
+          List.map LString.s ["Sunday"; "Monday"; "Wednesday"] :=
+        eq_refl.
+
+      Definition test_short :
+        List.map WeekDay.PrettyPrint.short
+          [WeekDay.Sunday; WeekDay.Monday; WeekDay.Wednesday] =
+          List.map LString.s ["Sun"; "Mon"; "Wed"] :=
+        eq_refl.
+    End PrettyPrint.
+  End WeekDay.
+
+  Module Month.
+    Definition test_of_Z :
+      List.map Month.of_Z [1; 7; 3] =
+        [Month.January; Month.July; Month.March] :=
+      eq_refl.
+
+    Definition test_of_date :
+      List.map Month.of_date [
+        New 2014 10 24;
+        New 2014 10 25;
+        New 0 1 1] = [
+        Month.October;
+        Month.October;
+        Month.January] :=
+      eq_refl.
+
+    Module PrettyPrint.
+      Require Import Coq.Strings.String.
+      Local Open Scope string.
+
+      Definition test_full :
+        List.map Month.PrettyPrint.full
+          [Month.October; Month.December; Month.March] =
+          List.map LString.s ["October"; "December"; "March"] :=
+        eq_refl.
+
+      Definition test_short :
+        List.map Month.PrettyPrint.short
+          [Month.October; Month.December; Month.March] =
+          List.map LString.s ["Oct"; "Dec"; "Mar"] :=
+        eq_refl.
+    End PrettyPrint.
+  End Month.
+
+  Module PrettyPrint.
+    Require Import Coq.Strings.String.
+    Local Open Scope string.
+
+    Definition test_year :
+      List.map PrettyPrint.year
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s ["2014"; "1"; "0"; "-1"] :=
+      eq_refl.
+
+    Definition test_month :
+      List.map PrettyPrint.month
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s ["5"; "2"; "1"; "12"] :=
+      eq_refl.
+
+    Definition test_space_padded_month :
+      List.map PrettyPrint.space_padded_month
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s [" 5"; " 2"; " 1"; "12"] :=
+      eq_refl.
+
+    Definition test_zero_padded_month :
+      List.map PrettyPrint.zero_padded_month
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s ["05"; "02"; "01"; "12"] :=
+      eq_refl.
+
+    Definition test_day :
+      List.map PrettyPrint.day
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s ["5"; "3"; "15"; "4"] :=
+      eq_refl.
+
+    Definition test_space_padded_day :
+      List.map PrettyPrint.space_padded_day
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s [" 5"; " 3"; "15"; " 4"] :=
+      eq_refl.
+
+    Definition test_zero_padded_day :
+      List.map PrettyPrint.zero_padded_day
+        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
+        List.map LString.s ["05"; "03"; "15"; "04"] :=
+      eq_refl.
+
+    Definition test_full_week_day :
+      List.map_pair PrettyPrint.full_week_day [
+        (true, New 2014 10 24);
+        (true, New 2014 10 25);
+        (false, New 0 1 1)] = List.map LString.s [
+        "Friday";
+        "Saturday";
+        "Thursday"] :=
+      eq_refl.
+
+    Definition test_short_week_day :
+      List.map_pair PrettyPrint.short_week_day [
+        (true, New 2014 10 24);
+        (true, New 2014 10 25);
+        (false, New 0 1 1)] = List.map LString.s [
+        "Fri";
+        "Sat";
+        "Thu"] :=
+      eq_refl.
+
+    Definition test_full_month :
+      List.map PrettyPrint.full_month
+        [New 2014 10 24; New 2014 10 25; New 0 1 1] =
+        List.map LString.s ["October"; "October"; "January"] :=
+      eq_refl.
+
+    Definition test_short_month :
+      List.map PrettyPrint.short_month
+        [New 2014 10 24; New 2014 10 25; New 0 1 1] =
+        List.map LString.s ["Oct"; "Oct"; "Jan"] :=
+      eq_refl.
+  End PrettyPrint.
 End Test.
