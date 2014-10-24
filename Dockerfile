@@ -13,9 +13,7 @@ ENV OPAMJOBS 6
 RUN opam install -y coq
 
 # Dependencies
-RUN opam repo add coq-stable https://github.com/coq/repo-stable.git
-RUN opam repo add coq-testing https://github.com/coq/repo-testing.git
-RUN opam repo add coq-unstable https://github.com/coq/repo-unstable.git
+RUN v=1 opam repo add coq-stable https://github.com/coq/repo-stable.git
 RUN opam install -y coq-function-ninjas coq-list-string
 
 # Tools

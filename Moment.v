@@ -2,7 +2,7 @@
 Require Import Coq.Lists.List.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
-Require Import LString.All.
+Require Import ListString.All.
 Require "Date".
 Require "Time".
 
