@@ -79,3 +79,27 @@ at the beginning of your source files. It will add three new modules:
 * `short_week_day (is_Gregorian : bool) (date : t) : LString.t` : The short name of a day of the week (Mon, Tue, ...).
 * `full_month (date : t) : LString.t` : The full name of a month (January, February, ...).
 * `short_month (date : t) : LString.t` : The short name of a month (Jan, Feb, ...).
+
+### Time
+* `t` : A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
+* `of_seconds (n : Z) : t` : The time of a second number (the number of seconds since midnight).
+* `to_seconds (time : t) : Z` : The number of seconds since midnight of a time.
+
+### Time.PrettyPrint
+* `hour (time : t) : LString.t` : Pretty-print the hour number.
+* `space_padded_hour (time : t) : LString.t` : Pretty-print the hour number with space padding.
+* `zero_padded_hour (time : t) : LString.t` : Pretty-print the hour number with zero padding.
+* `minute (time : t) : LString.t` : Pretty-print the minute number.
+* `space_padded_minute (time : t) : LString.t` : Pretty-print the minute number with space padding.
+* `zero_padded_minute (time : t) : LString.t` : Pretty-print the minute number with zero padding.
+* `second (time : t) : LString.t` : Pretty-print the second number.
+* `space_padded_second (time : t) : LString.t` : Pretty-print the second number with space padding.
+* `zero_padded_second (time : t) : LString.t` : Pretty-print the second number with zero padding.
+
+### Moment
+* `t` : A moment is a date and a time.
+* `of_epoch (n : Z) : t` : The moment given by a number of seconds since the Unix epoch.
+* `to_epoch (moment : t) : Z` : The number of seconds since the Unix epoch.
+
+### Moment.PrettyPrint
+* `rfc1123 (moment : t) : LString.t` : The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`.

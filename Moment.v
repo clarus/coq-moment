@@ -27,7 +27,7 @@ Definition to_epoch (moment : t) : Z :=
 
 (** Pretty-printing. *)
 Module PrettyPrint.
-  (** The moment in the RFC 1123 format (Sun, 06 Nov 1994 08:49:37 GMT). *)
+  (** The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`. *)
   Definition rfc1123 (moment : t) : LString.t :=
     Date.PrettyPrint.short_week_day true (date moment) ++ LString.s ", " ++
     Date.PrettyPrint.zero_padded_day (date moment) ++ LString.s " " ++
