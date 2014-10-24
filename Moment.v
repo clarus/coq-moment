@@ -62,8 +62,10 @@ Module Test.
 
     Definition test_rfc1123 :
       List.map PrettyPrint.rfc1123 [
+        New (Date.New 1970 1 1) (Time.New 0 0 0);
         New (Date.New 1994 11 6) (Time.New 8 49 37);
         New (Date.New 2014 10 24) (Time.New 15 40 37)] = List.map LString.s [
+        "Thu, 01 Jan 1970 00:00:00 GMT";
         "Sun, 06 Nov 1994 08:49:37 GMT";
         "Fri, 24 Oct 2014 15:40:37 GMT"] :=
       eq_refl.
