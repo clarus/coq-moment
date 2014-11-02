@@ -20,7 +20,7 @@ Add the Coq repository:
 
 and run:
 
-    opam install coq-moment
+    opam install coq:moment
 
 ### From the sources
 Do a classic:
