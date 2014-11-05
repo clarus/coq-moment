@@ -250,7 +250,7 @@ End PrettyPrint.
 
 (** Tests for this file. *)
 Module Test.
-  Require Import "TestHelpers".
+  Require Import TestHelpers.
 
   Definition test_compare :
     List.map_pair compare [

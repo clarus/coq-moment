@@ -3,8 +3,8 @@ Require Import Coq.Lists.List.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
-Require "Date".
-Require "Time".
+Require Date.
+Require Time.
 
 Import ListNotations.
 Local Open Scope Z.
