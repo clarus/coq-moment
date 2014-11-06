@@ -1,11 +1,13 @@
 (** Date: day in a calendar. *)
 Require Import Coq.Lists.List.
+Require Import Coq.Strings.Ascii.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
 
 Import ListNotations.
 Local Open Scope Z.
+Local Open Scope char.
 
 (** A date is a year, a month and a day. There is no enforced bound by the type
     system for the month and the day number, but values are expected to be in
@@ -72,23 +74,22 @@ Definition of_epoch (n : Z) : t :=
 Definition to_epoch (date : t) : Z :=
   to_Julian_day true date - to_Julian_day true epoch.
 
-
 (** Days of the week. *)
 Module WeekDay.
+  <% days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] %>
+
   (** The finite set of days of the week. *)
   Inductive t : Set :=
-  | Sunday | Monday | Tuesday | Wednesday | Thursday | Friday | Saturday.
+  <% for day in days %>
+  | <%= day %>
+  <% end %>.
 
   (** 0 for Sunday, 1 for Monday, ... *)
   Definition of_Z (n : Z) : t :=
     match n mod 7 with
-    | 0 => Sunday
-    | 1 => Monday
-    | 2 => Tuesday
-    | 3 => Wednesday
-    | 4 => Thursday
-    | 5 => Friday
-    | 6 => Saturday
+    <% for day, i in days.each_with_index %>
+    | <%= i %> => <%= day %>
+    <% end %>
     | _ => Sunday (* This case should not happen. *)
     end.
 
@@ -107,27 +108,40 @@ Module WeekDay.
     (** The full name of a day of the week (Monday, Tuesday, ...). *)
     Definition full (day : t) : LString.t :=
       LString.s match day with
-      | Sunday => "Sunday"
-      | Monday => "Monday"
-      | Tuesday => "Tuesday"
-      | Wednesday => "Wednesday"
-      | Thursday => "Thursday"
-      | Friday => "Friday"
-      | Saturday => "Saturday"
+      <% for day in days %>
+      | <%= day %> => "<%= day %>"
+      <% end %>
       end.
 
     (** The short name of a day of the week (Mon, Tue, ...). *)
     Definition short (day : t) : LString.t :=
       LString.s match day with
-      | Sunday => "Sun"
-      | Monday => "Mon"
-      | Tuesday => "Tue"
-      | Wednesday => "Wed"
-      | Thursday => "Thu"
-      | Friday => "Fri"
-      | Saturday => "Sat"
+      <% for day in days %>
+      | <%= day %> => "<%= day[0..2] %>"
+      <% end %>
       end.
   End Print.
+
+  (** Parsing. *)
+  Module Parse.
+    (** Parse the full name of a day of the week (Monday, Tuesday, ...). *)
+    Definition full (s : LString.t) : option (t * LString.t) :=
+      match s with
+      <% for day in days %>
+      | "<%= day.chars.to_a.join('" :: "') %>" :: s => Some (<%= day %>, s)
+      <% end %>
+      | _ => None
+      end.
+
+    (** Parse the short name of a day of the week (Mon, Tue, ...). *)
+    Definition short (s : LString.t) : option (t * LString.t) :=
+      match s with
+      <% for day in days %>
+      | "<%= day[0..2].chars.to_a.join('" :: "') %>" :: s => Some (<%= day %>, s)
+      <% end %>
+      | _ => None
+      end.
+  End Parse.
 End WeekDay.
 
 (** The month. *)
