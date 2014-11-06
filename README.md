@@ -89,6 +89,11 @@ at the beginning of your source files. It will add three new modules:
 * `full_month (date : t) : LString.t` : The full name of the month (January, February, ...).
 * `short_month (date : t) : LString.t` : The short name of the month (Jan, Feb, ...).
 
+### Date.Parse
+* `zero_padded_year (digits : nat) (s : LString.t) : option (Z * LString.t)` Parse a year with a fixed number of digits.
+* `zero_padded_month (s : LString.t) : option (Z * LString.t)` Parse a month number with two digits.
+* `zero_padded_day (s : LString.t) : option (Z * LString.t)` Parse a day number with two digits.
+
 ### Time
 * `t` : A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
 * `of_seconds (n : Z) : t` : The time of a second number (the number of seconds since midnight).

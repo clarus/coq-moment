@@ -2,6 +2,7 @@
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.Ascii.
 Require Import Coq.ZArith.ZArith.
+Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
 
@@ -261,6 +262,37 @@ Module Print.
     Month.Print.short @@ Month.of_date date.
 End Print.
 
+(** Parsing. *)
+Module Parse.
+  Fixpoint split (length : nat) (s : LString.t) : option (LString.t * LString.t) :=
+    match length with
+    | O => Some ([], s)
+    | S length =>
+      match s with
+      | [] => None
+      | c :: s =>
+        Option.bind (split length s) (fun result =>
+        let (s1, s2) := result in
+        Some (c :: s1, s2))
+      end
+    end.
+
+  (** Parse a year with a fixed number of digits. *)
+  Definition zero_padded_year (digits : nat) (s : LString.t) : option (Z * LString.t) :=
+    Option.bind (split digits s) (fun x =>
+    let (year, s) := x in
+    Option.bind (LString.to_N 10 year) (fun year =>
+    Some (Z.of_N year, s))).
+
+  (** Parse a month number with two digits. *)
+  Definition zero_padded_month (s : LString.t) : option (Z * LString.t) :=
+    zero_padded_year 2 s.
+
+  (** Parse a day number with two digits. *)
+  Definition zero_padded_day (s : LString.t) : option (Z * LString.t) :=
+    zero_padded_year 2 s.
+End Parse.
+
 (** Tests for this file. *)
 Module Test.
   Require Import TestHelpers.
@@ -487,4 +519,57 @@ Module Test.
         List.map LString.s ["Oct"; "Oct"; "Jan"] :=
       eq_refl.
   End Print.
+
+  Module Parse.
+    Require Import Coq.Strings.String.
+    Local Open Scope string.
+
+    Definition test_zero_padded_year :
+      List.map_pair Parse.zero_padded_year @@ [
+        (4%nat, LString.s "2014");
+        (1%nat, LString.s "1bla");
+        (3%nat, LString.s "003");
+        (5%nat, LString.s "haha2");
+        (2%nat, LString.s "2003bb");
+        (5%nat, LString.s "2003bb")] = [
+        Some (2014, LString.s "");
+        Some (1, LString.s "bla");
+        Some (3, LString.s "");
+        None;
+        Some (20, LString.s "03bb");
+        None] :=
+      eq_refl.
+
+    Definition test_zero_padded_month :
+      List.map Parse.zero_padded_month @@ List.map LString.s [
+        "11";
+        "111";
+        "01bla";
+        "1bla";
+        "1";
+        "bla"] = [
+        Some (11, LString.s "");
+        Some (11, LString.s "1");
+        Some (1, LString.s "bla");
+        None;
+        None;
+        None] :=
+      eq_refl.
+
+    Definition test_zero_padded_day :
+      List.map Parse.zero_padded_day @@ List.map LString.s [
+        "11";
+        "111";
+        "01bla";
+        "1bla";
+        "1";
+        "bla"] = [
+        Some (11, LString.s "");
+        Some (11, LString.s "1");
+        Some (1, LString.s "bla");
+        None;
+        None;
+        None] :=
+      eq_refl.
+  End Parse.
 End Test.
