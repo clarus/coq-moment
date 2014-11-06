@@ -58,6 +58,10 @@ at the beginning of your source files. It will add three new modules:
 * `full (day : t) : LString.t` The full name of a day of the week (Monday, Tuesday, ...).
 * `short (day : t) : LString.t` The short name of a day of the week (Mon, Tue, ...).
 
+### Date.WeekDay.Parse
+* `full (s : LString.t) : option (t * LString.t)` Parse the full name of a day of the week (Monday, Tuesday, ...).
+* `short (s : LString.t) : option (t * LString.t)` Parse the short name of a day of the week (Mon, Tue, ...).
+
 ### Date.Month
 * `t` : The finite set of months.
 * `of_Z (n : Z) : t` : 1 for January, 2 for February, ...
@@ -66,6 +70,10 @@ at the beginning of your source files. It will add three new modules:
 ### Date.Month.Print
 * `full (month : t) : LString.t` : The full name of a month (January, February, ...).
 * `short (month : t) : LString.t` : The short name of a month (Jan, Feb, ...).
+
+### Date.Month.Parse
+* `full (s : LString.t) : option (t * LString.t)` Parse the full name of a month (January, February, ...).
+* `short (s : LString.t) : option (t * LString.t)` Parse the short name of a month (Jan, Feb, ...).
 
 ### Date.Print
 * `year (date : t) : LString.t` : The year.

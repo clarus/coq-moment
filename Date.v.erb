@@ -146,26 +146,22 @@ End WeekDay.
 
 (** The month. *)
 Module Month.
+  <% months = [
+    "January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"] %>
+
   (** The finite set of months. *)
   Inductive t : Set :=
-  | January | February | March | April | May | June | July
-  | August | September | October | November | December.
+  <% for month in months %>
+  | <%= month %>
+  <% end %>.
 
   (** 1 for January, 2 for February, ... *)
   Definition of_Z (n : Z) : t :=
     match (n - 1) mod 12 + 1 with
-    | 1 => January
-    | 2 => February
-    | 3 => March
-    | 4 => April
-    | 5 => May
-    | 6 => June
-    | 7 => July
-    | 8 => August
-    | 9 => September
-    | 10 => October
-    | 11 => November
-    | 12 => December
+    <% for month, i in months.each_with_index %>
+    | <%= i + 1 %> => <%= month %>
+    <% end %>
     | _ => January (* This case should not happen. *)
     end.
 
@@ -178,37 +174,40 @@ Module Month.
     (** The full name of a month (January, February, ...). *)
     Definition full (month : t) : LString.t :=
       LString.s match month with
-      | January => "January"
-      | February => "February"
-      | March => "March"
-      | April => "April"
-      | May => "May"
-      | June => "June"
-      | July => "July"
-      | August => "August"
-      | September => "September"
-      | October => "October"
-      | November => "November"
-      | December => "December"
+      <% for month in months %>
+      | <%= month %> => "<%= month %>"
+      <% end %>
       end.
 
     (** The short name of a month (Jan, Feb, ...). *)
     Definition short (month : t) : LString.t :=
       LString.s match month with
-      | January => "Jan"
-      | February => "Feb"
-      | March => "Mar"
-      | April => "Apr"
-      | May => "May"
-      | June => "Jun"
-      | July => "Jul"
-      | August => "Aug"
-      | September => "Sep"
-      | October => "Oct"
-      | November => "Nov"
-      | December => "Dec"
+      <% for month in months %>
+      | <%= month %> => "<%= month[0..2] %>"
+      <% end %>
       end.
   End Print.
+
+  (** Parsing. *)
+  Module Parse.
+    (** Parse the full name of a month (January, February, ...). *)
+    Definition full (s : LString.t) : option (t * LString.t) :=
+      match s with
+      <% for month in months %>
+      | "<%= month.chars.to_a.join('" :: "') %>" :: s => Some (<%= month %>, s)
+      <% end %>
+      | _ => None
+      end.
+
+    (** Parse the short name of a month (Jan, Feb, ...). *)
+    Definition short (s : LString.t) : option (t * LString.t) :=
+      match s with
+      <% for month in months %>
+      | "<%= month[0..2].chars.to_a.join('" :: "') %>" :: s => Some (<%= month %>, s)
+      <% end %>
+      | _ => None
+      end.
+  End Parse.
 End Month.
 
 (** Pretty-printing. *)
@@ -332,6 +331,27 @@ Module Test.
           List.map LString.s ["Sun"; "Mon"; "Wed"] :=
         eq_refl.
     End Print.
+
+    Module Parse.
+      Require Import Coq.Strings.String.
+      Local Open Scope string.
+
+      Definition test_full :
+        List.map WeekDay.Parse.full @@
+          List.map LString.s ["Sunday"; "Mondaybla"; "gWednesday"] = [
+          Some (WeekDay.Sunday, LString.s "");
+          Some (WeekDay.Monday, LString.s "bla");
+          None] :=
+        eq_refl.
+
+      Definition test_short :
+        List.map WeekDay.Parse.short @@
+          List.map LString.s ["Sun"; "Monbla"; "gWed"] = [
+          Some (WeekDay.Sunday, LString.s "");
+          Some (WeekDay.Monday, LString.s "bla");
+          None] :=
+        eq_refl.
+    End Parse.
   End WeekDay.
 
   Module Month.
@@ -366,6 +386,27 @@ Module Test.
           List.map LString.s ["Oct"; "Dec"; "Mar"] :=
         eq_refl.
     End Print.
+
+    Module Parse.
+      Require Import Coq.Strings.String.
+      Local Open Scope string.
+
+      Definition test_full :
+        List.map Month.Parse.full @@
+          List.map LString.s ["October"; "Decemberbla"; "gMarch"] = [
+          Some (Month.October, LString.s "");
+          Some (Month.December, LString.s "bla");
+          None] :=
+        eq_refl.
+
+      Definition test_short :
+        List.map Month.Parse.short @@
+          List.map LString.s ["Oct"; "Decbla"; "gMar"] = [
+          Some (Month.October, LString.s "");
+          Some (Month.December, LString.s "bla");
+          None] :=
+        eq_refl.
+    End Parse.
   End Month.
 
   Module Print.
