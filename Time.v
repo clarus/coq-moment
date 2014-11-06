@@ -31,7 +31,7 @@ Definition to_seconds (time : t) : Z :=
   second time + 60 * (minute time + 60 * hour time).
 
 (** Pretty-printing. *)
-Module PrettyPrint.
+Module Print.
   (** Pretty-print the hour number. *)
   Definition hour (time : t) : LString.t :=
     LString.of_Z 10 2 @@ hour time.
@@ -73,7 +73,7 @@ Module PrettyPrint.
   Definition zero_padded_second (time : t) : LString.t :=
     (if Z.leb 10 (Time.second time) then LString.s "" else LString.s "0") ++
     LString.of_Z 10 2 @@ Time.second time.
-End PrettyPrint.
+End Print.
 
 (** Tests for this file. *)
 Module Test.
@@ -87,62 +87,62 @@ Module Test.
       [0; 55349; 55350] :=
     eq_refl.
 
-  Module PrettyPrint.
+  Module Print.
     Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_hour :
-      List.map PrettyPrint.hour
+      List.map Print.hour
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["0"; "15"; "15"] :=
       eq_refl.
 
     Definition test_space_padded_hour :
-      List.map PrettyPrint.space_padded_hour
+      List.map Print.space_padded_hour
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s [" 0"; "15"; "15"] :=
       eq_refl.
 
     Definition test_zero_padded_hour :
-      List.map PrettyPrint.zero_padded_hour
+      List.map Print.zero_padded_hour
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["00"; "15"; "15"] :=
       eq_refl.
 
     Definition test_minute :
-      List.map PrettyPrint.minute
+      List.map Print.minute
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["0"; "22"; "22"] :=
       eq_refl.
 
     Definition test_space_padded_minute :
-      List.map PrettyPrint.space_padded_minute
+      List.map Print.space_padded_minute
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s [" 0"; "22"; "22"] :=
       eq_refl.
 
     Definition test_zero_padded_minute :
-      List.map PrettyPrint.zero_padded_minute
+      List.map Print.zero_padded_minute
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["00"; "22"; "22"] :=
       eq_refl.
 
     Definition test_second :
-      List.map PrettyPrint.second
+      List.map Print.second
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["0"; "29"; "30"] :=
       eq_refl.
 
     Definition test_space_padded_second :
-      List.map PrettyPrint.space_padded_second
+      List.map Print.space_padded_second
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s [" 0"; "29"; "30"] :=
       eq_refl.
 
     Definition test_zero_padded_second :
-      List.map PrettyPrint.zero_padded_second
+      List.map Print.zero_padded_second
         [New 0 0 0; New 15 22 29; New 15 22 30] =
         List.map LString.s ["00"; "29"; "30"] :=
       eq_refl.
-  End PrettyPrint.
+  End Print.
 End Test.

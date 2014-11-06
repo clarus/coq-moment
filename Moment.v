@@ -26,18 +26,18 @@ Definition to_epoch (moment : t) : Z :=
   seconds_per_day * Date.to_epoch (date moment) + Time.to_seconds (time moment).
 
 (** Pretty-printing. *)
-Module PrettyPrint.
+Module Print.
   (** The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`. *)
   Definition rfc1123 (moment : t) : LString.t :=
-    Date.PrettyPrint.short_week_day true (date moment) ++ LString.s ", " ++
-    Date.PrettyPrint.zero_padded_day (date moment) ++ LString.s " " ++
-    Date.PrettyPrint.short_month (date moment) ++ LString.s " " ++
-    Date.PrettyPrint.year (date moment) ++ LString.s " " ++
-    Time.PrettyPrint.zero_padded_hour (time moment) ++ LString.s ":" ++
-    Time.PrettyPrint.zero_padded_minute (time moment) ++ LString.s ":" ++
-    Time.PrettyPrint.zero_padded_second (time moment) ++ LString.s " " ++
+    Date.Print.short_week_day true (date moment) ++ LString.s ", " ++
+    Date.Print.zero_padded_day (date moment) ++ LString.s " " ++
+    Date.Print.short_month (date moment) ++ LString.s " " ++
+    Date.Print.year (date moment) ++ LString.s " " ++
+    Time.Print.zero_padded_hour (time moment) ++ LString.s ":" ++
+    Time.Print.zero_padded_minute (time moment) ++ LString.s ":" ++
+    Time.Print.zero_padded_second (time moment) ++ LString.s " " ++
     LString.s "GMT".
-End PrettyPrint.
+End Print.
 
 (** Tests for this file. *)
 Module Test.
@@ -56,12 +56,12 @@ Module Test.
       [0; 1414165237; 1414165239] :=
     eq_refl.
 
-  Module PrettyPrint.
+  Module Print.
     Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_rfc1123 :
-      List.map PrettyPrint.rfc1123 [
+      List.map Print.rfc1123 [
         New (Date.New 1970 1 1) (Time.New 0 0 0);
         New (Date.New 1994 11 6) (Time.New 8 49 37);
         New (Date.New 2014 10 24) (Time.New 15 40 37)] = List.map LString.s [
@@ -69,5 +69,5 @@ Module Test.
         "Sun, 06 Nov 1994 08:49:37 GMT";
         "Fri, 24 Oct 2014 15:40:37 GMT"] :=
       eq_refl.
-  End PrettyPrint.
+  End Print.
 End Test.

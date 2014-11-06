@@ -6,7 +6,7 @@ Parse, manipulate and pretty-print dates in Coq.
     Require Import ListString.All.
     Require Import Moment.All.
 
-    Compute LString.to_string @@ Moment.PrettyPrint.rfc1123 @@ Moment.of_epoch 0.
+    Compute LString.to_string @@ Moment.Print.rfc1123 @@ Moment.of_epoch 0.
 
 gives:
     
@@ -54,7 +54,7 @@ at the beginning of your source files. It will add three new modules:
 * `of_Z (n : Z) : t` 0 for Sunday, 1 for Monday, ...
 * `of_date (is_Gregorian : bool) (date : Date.t) : t` The day of the week of a date.
 
-### Date.WeekDay.PrettyPrint
+### Date.WeekDay.Print
 * `full (day : t) : LString.t` The full name of a day of the week (Monday, Tuesday, ...).
 * `short (day : t) : LString.t` The short name of a day of the week (Mon, Tue, ...).
 
@@ -63,11 +63,11 @@ at the beginning of your source files. It will add three new modules:
 * `of_Z (n : Z) : t` : 1 for January, 2 for February, ...
 * `of_date (date : Date.t) : t` : The month of a date.
 
-### Date.Month.PrettyPrint
+### Date.Month.Print
 * `full (month : t) : LString.t` : The full name of a month (January, February, ...).
 * `short (month : t) : LString.t` : The short name of a month (Jan, Feb, ...).
 
-### Date.PrettyPrint
+### Date.Print
 * `year (date : t) : LString.t` : The year.
 * `month (date : t) : LString.t` : The month number.
 * `space_padded_month (date : t) : LString.t` : The month number with space padding.
@@ -85,7 +85,7 @@ at the beginning of your source files. It will add three new modules:
 * `of_seconds (n : Z) : t` : The time of a second number (the number of seconds since midnight).
 * `to_seconds (time : t) : Z` : The number of seconds since midnight of a time.
 
-### Time.PrettyPrint
+### Time.Print
 * `hour (time : t) : LString.t` : Pretty-print the hour number.
 * `space_padded_hour (time : t) : LString.t` : Pretty-print the hour number with space padding.
 * `zero_padded_hour (time : t) : LString.t` : Pretty-print the hour number with zero padding.
@@ -101,5 +101,5 @@ at the beginning of your source files. It will add three new modules:
 * `of_epoch (n : Z) : t` : The moment given by a number of seconds since the Unix epoch.
 * `to_epoch (moment : t) : Z` : The number of seconds since the Unix epoch.
 
-### Moment.PrettyPrint
+### Moment.Print
 * `rfc1123 (moment : t) : LString.t` : The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`.
