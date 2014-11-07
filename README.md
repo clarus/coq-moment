@@ -64,30 +64,31 @@ at the beginning of your source files. It will add three new modules:
 * `short (s : LString.t) : option (t * LString.t)` Parse the short name of a day of the week (Mon, Tue, ...).
 
 ### Date.Month
-* `t` : The finite set of months.
-* `of_Z (n : Z) : t` : 1 for January, 2 for February, ...
-* `of_date (date : Date.t) : t` : The month of a date.
+* `t` The finite set of months.
+* `of_Z (n : Z) : t` 1 for January, 2 for February, ...
+* `of_date (date : Date.t) : t` The month of a date.
 
 ### Date.Month.Print
-* `full (month : t) : LString.t` : The full name of a month (January, February, ...).
-* `short (month : t) : LString.t` : The short name of a month (Jan, Feb, ...).
+* `full (month : t) : LString.t` The full name of a month (January, February, ...).
+* `short (month : t) : LString.t` The short name of a month (Jan, Feb, ...).
 
 ### Date.Month.Parse
 * `full (s : LString.t) : option (t * LString.t)` Parse the full name of a month (January, February, ...).
 * `short (s : LString.t) : option (t * LString.t)` Parse the short name of a month (Jan, Feb, ...).
 
 ### Date.Print
-* `year (date : t) : LString.t` : The year.
-* `month (date : t) : LString.t` : The month number.
-* `space_padded_month (date : t) : LString.t` : The month number with space padding.
-* `zero_padded_month (date : t) : LString.t` : The month number with zero padding.
-* `day (date : t) : LString.t` : The day number.
-* `space_padded_day (date : t) : LString.t` : The day number with space padding.
-* `zero_padded_day (date : t) : LString.t` : The day number with zero padding.
-* `full_week_day (is_Gregorian : bool) (date : t) : LString.t` : The full name of the day of the week (Monday, Tuesday, ...).
-* `short_week_day (is_Gregorian : bool) (date : t) : LString.t` : The short name of the day of the week (Mon, Tue, ...).
-* `full_month (date : t) : LString.t` : The full name of the month (January, February, ...).
-* `short_month (date : t) : LString.t` : The short name of the month (Jan, Feb, ...).
+* `year (date : t) : LString.t` The year.
+* `month (date : t) : LString.t` The month number.
+* `space_padded_month (date : t) : LString.t` The month number with space padding.
+* `zero_padded_month (date : t) : LString.t` The month number with zero padding.
+* `day (date : t) : LString.t` The day number.
+* `space_padded_day (date : t) : LString.t` The day number with space padding.
+* `zero_padded_day (date : t) : LString.t` The day number with zero padding.
+* `full_week_day (is_Gregorian : bool) (date : t) : LString.t` The full name of the day of the week (Monday, Tuesday, ...).
+* `short_week_day (is_Gregorian : bool) (date : t) : LString.t` The short name of the day of the week (Mon, Tue, ...).
+* `full_month (date : t) : LString.t` The full name of the month (January, February, ...).
+* `short_month (date : t) : LString.t` The short name of the month (Jan, Feb, ...).
+* `date (date : t) : LString.t` The date in the format yyyy-mm-dd.
 
 ### Date.Parse
 * `zero_padded_year (digits : nat) (s : LString.t) : option (Z * LString.t)` Parse a year with a fixed number of digits.
@@ -95,25 +96,25 @@ at the beginning of your source files. It will add three new modules:
 * `zero_padded_day (s : LString.t) : option (Z * LString.t)` Parse a day number with two digits.
 
 ### Time
-* `t` : A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
-* `of_seconds (n : Z) : t` : The time of a second number (the number of seconds since midnight).
-* `to_seconds (time : t) : Z` : The number of seconds since midnight of a time.
+* `t` A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
+* `of_seconds (n : Z) : t` The time of a second number (the number of seconds since midnight).
+* `to_seconds (time : t) : Z` The number of seconds since midnight of a time.
 
 ### Time.Print
-* `hour (time : t) : LString.t` : Pretty-print the hour number.
-* `space_padded_hour (time : t) : LString.t` : Pretty-print the hour number with space padding.
-* `zero_padded_hour (time : t) : LString.t` : Pretty-print the hour number with zero padding.
-* `minute (time : t) : LString.t` : Pretty-print the minute number.
-* `space_padded_minute (time : t) : LString.t` : Pretty-print the minute number with space padding.
-* `zero_padded_minute (time : t) : LString.t` : Pretty-print the minute number with zero padding.
-* `second (time : t) : LString.t` : Pretty-print the second number.
-* `space_padded_second (time : t) : LString.t` : Pretty-print the second number with space padding.
-* `zero_padded_second (time : t) : LString.t` : Pretty-print the second number with zero padding.
+* `hour (time : t) : LString.t` Pretty-print the hour number.
+* `space_padded_hour (time : t) : LString.t` Pretty-print the hour number with space padding.
+* `zero_padded_hour (time : t) : LString.t` Pretty-print the hour number with zero padding.
+* `minute (time : t) : LString.t` Pretty-print the minute number.
+* `space_padded_minute (time : t) : LString.t` Pretty-print the minute number with space padding.
+* `zero_padded_minute (time : t) : LString.t` Pretty-print the minute number with zero padding.
+* `second (time : t) : LString.t` Pretty-print the second number.
+* `space_padded_second (time : t) : LString.t` Pretty-print the second number with space padding.
+* `zero_padded_second (time : t) : LString.t` Pretty-print the second number with zero padding.
 
 ### Moment
-* `t` : A moment is a date and a time.
-* `of_epoch (n : Z) : t` : The moment given by a number of seconds since the Unix epoch.
-* `to_epoch (moment : t) : Z` : The number of seconds since the Unix epoch.
+* `t` A moment is a date and a time.
+* `of_epoch (n : Z) : t` The moment given by a number of seconds since the Unix epoch.
+* `to_epoch (moment : t) : Z` The number of seconds since the Unix epoch.
 
 ### Moment.Print
-* `rfc1123 (moment : t) : LString.t` : The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`.
+* `rfc1123 (moment : t) : LString.t` The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`.

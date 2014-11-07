@@ -260,6 +260,12 @@ Module Print.
   (** The short name of the month (Jan, Feb, ...). *)
   Definition short_month (date : t) : LString.t :=
     Month.Print.short @@ Month.of_date date.
+
+  (** The date in the format yyyy-mm-dd. *)
+  Definition date (date : t) : LString.t :=
+    LString.of_N 10 4 (Some "0") (Z.to_N @@ Date.year date) ++ ["-"] ++
+    zero_padded_month date ++ ["-"] ++
+    zero_padded_day date.
 End Print.
 
 (** Parsing. *)
@@ -508,15 +514,18 @@ Module Test.
       eq_refl.
 
     Definition test_full_month :
-      List.map Print.full_month
-        [New 2014 10 24; New 2014 10 25; New 0 1 1] =
+      List.map Print.full_month [New 2014 10 24; New 2014 10 25; New 0 1 1] =
         List.map LString.s ["October"; "October"; "January"] :=
       eq_refl.
 
     Definition test_short_month :
-      List.map Print.short_month
-        [New 2014 10 24; New 2014 10 25; New 0 1 1] =
+      List.map Print.short_month [New 2014 10 24; New 2014 10 25; New 0 1 1] =
         List.map LString.s ["Oct"; "Oct"; "Jan"] :=
+      eq_refl.
+    
+    Definition test_date :
+      List.map Print.date [New 2014 10 24; New 2014 10 25; New 0 1 1] =
+        List.map LString.s ["2014-10-24"; "2014-10-25"; "0000-01-01"] :=
       eq_refl.
   End Print.
 
