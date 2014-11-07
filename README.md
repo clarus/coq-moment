@@ -100,6 +100,7 @@ at the beginning of your source files. It will add three new modules:
 * `hour (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the hour number, with an optional padding to be of width two.
 * `minute (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the minute number, with an optional padding to be of width two.
 * `second (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the second number, with an optional padding to be of width two.
+* `time (time : t) : LString.t` The time in the format hh:mm:ss.
 
 ### Moment
 * `t` A moment is a date and a time.

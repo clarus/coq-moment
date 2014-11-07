@@ -35,10 +35,8 @@ Module Print.
     Date.Print.day (Some "0") (date moment) ++ LString.s " " ++
     Date.Print.short_month (date moment) ++ LString.s " " ++
     Date.Print.year 4 (Some "0") (date moment) ++ LString.s " " ++
-    Time.Print.hour (Some "0") (time moment) ++ LString.s ":" ++
-    Time.Print.minute (Some "0") (time moment) ++ LString.s ":" ++
-    Time.Print.second (Some "0") (time moment) ++ LString.s " " ++
-    LString.s "GMT".
+    Time.Print.time (time moment) ++
+    LString.s " GMT".
 End Print.
 
 (** Tests for this file. *)

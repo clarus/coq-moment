@@ -1,10 +1,12 @@
 (** Time in a day. *)
 Require Import Coq.Lists.List.
+Require Import Coq.Strings.Ascii.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
 
 Import ListNotations.
+Local Open Scope char.
 Local Open Scope Z.
 
 (** A time is an hour, a minute and a second. There is no enforced bound by the
@@ -43,6 +45,12 @@ Module Print.
   (** Pretty-print the second number, with an optional padding to be of width two. *)
   Definition second (padding : option Ascii.ascii) (time : t) : LString.t :=
     LString.of_N 10 2 padding @@ Z.to_N @@ second time.
+
+  (** The time in the format hh:mm:ss. *)
+  Definition time (time : t) : LString.t :=
+    hour (Some "0") time ++ LString.s ":" ++
+    minute (Some "0") time ++ LString.s ":" ++
+    second (Some "0") time.
 End Print.
 
 (** Tests for this file. *)
@@ -113,6 +121,11 @@ Module Test.
           "0"; "29"; "30";
           " 0"; "29"; "30";
           "00"; "29"; "30"] :=
+      eq_refl.
+
+    Definition test_time :
+      List.map Print.time [New 0 0 0; New 15 22 29; New 15 22 30] =
+        List.map LString.s ["00:00:00"; "15:22:29"; "15:22:30"] :=
       eq_refl.
   End Print.
 End Test.
