@@ -32,51 +32,23 @@ Definition to_seconds (time : t) : Z :=
 
 (** Pretty-printing. *)
 Module Print.
-  (** Pretty-print the hour number. *)
-  Definition hour (time : t) : LString.t :=
-    LString.of_Z 10 2 @@ hour time.
+  (** Pretty-print the hour number, with an optional padding to be of width two. *)
+  Definition hour (padding : option Ascii.ascii) (time : t) : LString.t :=
+    LString.of_N 10 2 padding @@ Z.to_N @@ hour time.
 
-  (** Pretty-print the hour number with space padding. *)
-  Definition space_padded_hour (time : t) : LString.t :=
-    (if Z.leb 10 (Time.hour time) then LString.s "" else LString.s " ") ++
-    LString.of_Z 10 2 @@ Time.hour time.
+  (** Pretty-print the minute number, with an optional padding to be of width two. *)
+  Definition minute (padding : option Ascii.ascii) (time : t) : LString.t :=
+    LString.of_N 10 2 padding @@ Z.to_N @@ minute time.
 
-  (** Pretty-print the hour number with zero padding. *)
-  Definition zero_padded_hour (time : t) : LString.t :=
-    (if Z.leb 10 (Time.hour time) then LString.s "" else LString.s "0") ++
-    LString.of_Z 10 2 @@ Time.hour time.
-
-  (** Pretty-print the minute number. *)
-  Definition minute (time : t) : LString.t :=
-    LString.of_Z 10 2 @@ minute time.
-
-  (** Pretty-print the minute number with space padding. *)
-  Definition space_padded_minute (time : t) : LString.t :=
-    (if Z.leb 10 (Time.minute time) then LString.s "" else LString.s " ") ++
-    LString.of_Z 10 2 @@ Time.minute time.
-
-  (** Pretty-print the minute number with zero padding. *)
-  Definition zero_padded_minute (time : t) : LString.t :=
-    (if Z.leb 10 (Time.minute time) then LString.s "" else LString.s "0") ++
-    LString.of_Z 10 2 @@ Time.minute time.
-
-  (** Pretty-print the second number. *)
-  Definition second (time : t) : LString.t :=
-    LString.of_Z 10 2 @@ second time.
-
-  (** Pretty-print the second number with space padding. *)
-  Definition space_padded_second (time : t) : LString.t :=
-    (if Z.leb 10 (Time.second time) then LString.s "" else LString.s " ") ++
-    LString.of_Z 10 2 @@ Time.second time.
-
-  (** Pretty-print the second number with zero padding. *)
-  Definition zero_padded_second (time : t) : LString.t :=
-    (if Z.leb 10 (Time.second time) then LString.s "" else LString.s "0") ++
-    LString.of_Z 10 2 @@ Time.second time.
+  (** Pretty-print the second number, with an optional padding to be of width two. *)
+  Definition second (padding : option Ascii.ascii) (time : t) : LString.t :=
+    LString.of_N 10 2 padding @@ Z.to_N @@ second time.
 End Print.
 
 (** Tests for this file. *)
 Module Test.
+  Require Import TestHelpers.
+
   Definition test_of_seconds :
     List.map of_seconds [0; 1414164149; 1414164150] =
       [New 0 0 0; New 15 22 29; New 15 22 30] :=
@@ -88,61 +60,59 @@ Module Test.
     eq_refl.
 
   Module Print.
+    Require Import Coq.Strings.Ascii.
     Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_hour :
-      List.map Print.hour
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["0"; "15"; "15"] :=
-      eq_refl.
-
-    Definition test_space_padded_hour :
-      List.map Print.space_padded_hour
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s [" 0"; "15"; "15"] :=
-      eq_refl.
-
-    Definition test_zero_padded_hour :
-      List.map Print.zero_padded_hour
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["00"; "15"; "15"] :=
+      List.map_pair Print.hour [
+        (None, New 0 0 0);
+        (None, New 15 22 29);
+        (None, New 15 22 30);
+        (Some " "%char, New 0 0 0);
+        (Some " "%char, New 15 22 29);
+        (Some " "%char, New 15 22 30);
+        (Some "0"%char, New 0 0 0);
+        (Some "0"%char, New 15 22 29);
+        (Some "0"%char, New 15 22 30)] =
+        List.map LString.s [
+          "0"; "15"; "15";
+          " 0"; "15"; "15";
+          "00"; "15"; "15"] :=
       eq_refl.
 
     Definition test_minute :
-      List.map Print.minute
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["0"; "22"; "22"] :=
-      eq_refl.
-
-    Definition test_space_padded_minute :
-      List.map Print.space_padded_minute
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s [" 0"; "22"; "22"] :=
-      eq_refl.
-
-    Definition test_zero_padded_minute :
-      List.map Print.zero_padded_minute
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["00"; "22"; "22"] :=
+      List.map_pair Print.minute [
+        (None, New 0 0 0);
+        (None, New 15 22 29);
+        (None, New 15 22 30);
+        (Some " "%char, New 0 0 0);
+        (Some " "%char, New 15 22 29);
+        (Some " "%char, New 15 22 30);
+        (Some "0"%char, New 0 0 0);
+        (Some "0"%char, New 15 22 29);
+        (Some "0"%char, New 15 22 30)] =
+        List.map LString.s [
+          "0"; "22"; "22";
+          " 0"; "22"; "22";
+          "00"; "22"; "22"] :=
       eq_refl.
 
     Definition test_second :
-      List.map Print.second
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["0"; "29"; "30"] :=
-      eq_refl.
-
-    Definition test_space_padded_second :
-      List.map Print.space_padded_second
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s [" 0"; "29"; "30"] :=
-      eq_refl.
-
-    Definition test_zero_padded_second :
-      List.map Print.zero_padded_second
-        [New 0 0 0; New 15 22 29; New 15 22 30] =
-        List.map LString.s ["00"; "29"; "30"] :=
+      List.map_pair Print.second [
+        (None, New 0 0 0);
+        (None, New 15 22 29);
+        (None, New 15 22 30);
+        (Some " "%char, New 0 0 0);
+        (Some " "%char, New 15 22 29);
+        (Some " "%char, New 15 22 30);
+        (Some "0"%char, New 0 0 0);
+        (Some "0"%char, New 15 22 29);
+        (Some "0"%char, New 15 22 30)] =
+        List.map LString.s [
+          "0"; "29"; "30";
+          " 0"; "29"; "30";
+          "00"; "29"; "30"] :=
       eq_refl.
   End Print.
 End Test.

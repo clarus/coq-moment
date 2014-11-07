@@ -1,5 +1,6 @@
 (** Moment: a date and a time. *)
 Require Import Coq.Lists.List.
+Require Import Coq.Strings.Ascii.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
@@ -7,6 +8,7 @@ Require Date.
 Require Time.
 
 Import ListNotations.
+Local Open Scope char.
 Local Open Scope Z.
 
 (** A moment is a date and a time. *)
@@ -30,12 +32,12 @@ Module Print.
   (** The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`. *)
   Definition rfc1123 (moment : t) : LString.t :=
     Date.Print.short_week_day true (date moment) ++ LString.s ", " ++
-    Date.Print.zero_padded_day (date moment) ++ LString.s " " ++
+    Date.Print.day (Some "0") (date moment) ++ LString.s " " ++
     Date.Print.short_month (date moment) ++ LString.s " " ++
-    Date.Print.year (date moment) ++ LString.s " " ++
-    Time.Print.zero_padded_hour (time moment) ++ LString.s ":" ++
-    Time.Print.zero_padded_minute (time moment) ++ LString.s ":" ++
-    Time.Print.zero_padded_second (time moment) ++ LString.s " " ++
+    Date.Print.year 4 (Some "0") (date moment) ++ LString.s " " ++
+    Time.Print.hour (Some "0") (time moment) ++ LString.s ":" ++
+    Time.Print.minute (Some "0") (time moment) ++ LString.s ":" ++
+    Time.Print.second (Some "0") (time moment) ++ LString.s " " ++
     LString.s "GMT".
 End Print.
 

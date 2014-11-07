@@ -77,13 +77,9 @@ at the beginning of your source files. It will add three new modules:
 * `short (s : LString.t) : option (t * LString.t)` Parse the short name of a month (Jan, Feb, ...).
 
 ### Date.Print
-* `year (date : t) : LString.t` The year.
-* `month (date : t) : LString.t` The month number.
-* `space_padded_month (date : t) : LString.t` The month number with space padding.
-* `zero_padded_month (date : t) : LString.t` The month number with zero padding.
-* `day (date : t) : LString.t` The day number.
-* `space_padded_day (date : t) : LString.t` The day number with space padding.
-* `zero_padded_day (date : t) : LString.t` The day number with zero padding.
+* `year (digits : nat) (padding : option Ascii.ascii) (date : t) : LString.t` The year, supposed to be positive, with an optional padding to be of width `digits`.
+* `month month (padding : option Ascii.ascii) (date : t) : LString.t` The month number, with an optional padding to be of width two.
+* `day day (padding : option Ascii.ascii) (date : t) : LString.t` The day number, with an optional padding to be of width two.
 * `full_week_day (is_Gregorian : bool) (date : t) : LString.t` The full name of the day of the week (Monday, Tuesday, ...).
 * `short_week_day (is_Gregorian : bool) (date : t) : LString.t` The short name of the day of the week (Mon, Tue, ...).
 * `full_month (date : t) : LString.t` The full name of the month (January, February, ...).
@@ -101,15 +97,9 @@ at the beginning of your source files. It will add three new modules:
 * `to_seconds (time : t) : Z` The number of seconds since midnight of a time.
 
 ### Time.Print
-* `hour (time : t) : LString.t` Pretty-print the hour number.
-* `space_padded_hour (time : t) : LString.t` Pretty-print the hour number with space padding.
-* `zero_padded_hour (time : t) : LString.t` Pretty-print the hour number with zero padding.
-* `minute (time : t) : LString.t` Pretty-print the minute number.
-* `space_padded_minute (time : t) : LString.t` Pretty-print the minute number with space padding.
-* `zero_padded_minute (time : t) : LString.t` Pretty-print the minute number with zero padding.
-* `second (time : t) : LString.t` Pretty-print the second number.
-* `space_padded_second (time : t) : LString.t` Pretty-print the second number with space padding.
-* `zero_padded_second (time : t) : LString.t` Pretty-print the second number with zero padding.
+* `hour (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the hour number, with an optional padding to be of width two.
+* `minute (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the minute number, with an optional padding to be of width two.
+* `second (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the second number, with an optional padding to be of width two.
 
 ### Moment
 * `t` A moment is a date and a time.

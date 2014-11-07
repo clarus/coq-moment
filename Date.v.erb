@@ -213,37 +213,19 @@ End Month.
 
 (** Pretty-printing. *)
 Module Print.
-  (** The year. *)
-  Definition year (date : t) : LString.t :=
-    LString.of_Z 10 10 @@ year date.
+  (** The year, supposed to be positive, with an optional padding to be of width
+      `digits`. *)
+  Definition year (digits : nat) (padding : option Ascii.ascii) (date : t)
+    : LString.t :=
+    LString.of_N 10 digits padding @@ Z.to_N @@ year date.
 
-  (** The month number. *)
-  Definition month (date : t) : LString.t :=
-    LString.of_Z 10 2 @@ month date.
+  (** The month number, with an optional padding to be of width two. *)
+  Definition month (padding : option Ascii.ascii) (date : t) : LString.t :=
+    LString.of_N 10 2 padding @@ Z.to_N @@ month date.
 
-  (** The month number with space padding. *)
-  Definition space_padded_month (date : t) : LString.t :=
-    (if Z.leb 10 (Date.month date) then LString.s "" else LString.s " ") ++
-    LString.of_Z 10 2 @@ Date.month date.
-
-  (** The month number with zero padding. *)
-  Definition zero_padded_month (date : t) : LString.t :=
-    (if Z.leb 10 (Date.month date) then LString.s "" else LString.s "0") ++
-    LString.of_Z 10 2 @@ Date.month date.
-
-  (** The day number. *)
-  Definition day (date : t) : LString.t :=
-    LString.of_Z 10 2 @@ day date.
-
-  (** The day number with space padding. *)
-  Definition space_padded_day (date : t) : LString.t :=
-    (if Z.leb 10 (Date.day date) then LString.s "" else LString.s " ") ++
-    LString.of_Z 10 2 @@ Date.day date.
-
-  (** The day number with zero padding. *)
-  Definition zero_padded_day (date : t) : LString.t :=
-    (if Z.leb 10 (Date.day date) then LString.s "" else LString.s "0") ++
-    LString.of_Z 10 2 @@ Date.day date.
+  (** The day number, with an optional padding to be of width two. *)
+  Definition day (padding : option Ascii.ascii) (date : t) : LString.t :=
+    LString.of_N 10 2 padding @@ Z.to_N @@ day date.
 
   (** The full name of the day of the week (Monday, Tuesday, ...). *)
   Definition full_week_day (is_Gregorian : bool) (date : t) : LString.t :=
@@ -263,9 +245,9 @@ Module Print.
 
   (** The date in the format yyyy-mm-dd. *)
   Definition date (date : t) : LString.t :=
-    LString.of_N 10 4 (Some "0") (Z.to_N @@ Date.year date) ++ ["-"] ++
-    zero_padded_month date ++ ["-"] ++
-    zero_padded_day date.
+    year 4 (Some "0") date ++ ["-"] ++
+    month (Some "0") date ++ ["-"] ++
+    day (Some "0") date.
 End Print.
 
 (** Parsing. *)
@@ -448,49 +430,57 @@ Module Test.
   End Month.
 
   Module Print.
+    Require Import Coq.Strings.Ascii.
     Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_year :
-      List.map Print.year
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s ["2014"; "1"; "0"; "-1"] :=
+      List.map_triple Print.year [
+        (4%nat, Some "0"%char, New 2014 5 5);
+        (4%nat, Some "0"%char, New 0214 5 5);
+        (2%nat, Some "0"%char, New 0214 5 5);
+        (2%nat, Some " "%char, New 1 2 3);
+        (2%nat, None, New (-0) 1 15);
+        (2%nat, None, New (-1) 12 4)] =
+        List.map LString.s ["2014"; "0214"; "14"; " 1"; "0"; "0"] :=
       eq_refl.
 
     Definition test_month :
-      List.map Print.month
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s ["5"; "2"; "1"; "12"] :=
-      eq_refl.
-
-    Definition test_space_padded_month :
-      List.map Print.space_padded_month
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s [" 5"; " 2"; " 1"; "12"] :=
-      eq_refl.
-
-    Definition test_zero_padded_month :
-      List.map Print.zero_padded_month
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s ["05"; "02"; "01"; "12"] :=
+      List.map_pair Print.month [
+        (None, New 2014 5 5);
+        (None, New 1 2 3);
+        (None, New (-0) 1 15);
+        (None, New (-1) 12 4);
+        (Some " "%char, New 2014 5 5);
+        (Some " "%char, New 1 2 3);
+        (Some " "%char, New (-0) 1 15);
+        (Some " "%char, New (-1) 12 4);
+        (Some "0"%char, New 2014 5 5);
+        (Some "0"%char, New 1 2 3);
+        (Some "0"%char, New (-0) 1 15);
+        (Some "0"%char, New (-1) 12 4)] = List.map LString.s [
+          "5"; "2"; "1"; "12";
+          " 5"; " 2"; " 1"; "12";
+          "05"; "02"; "01"; "12"] :=
       eq_refl.
 
     Definition test_day :
-      List.map Print.day
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s ["5"; "3"; "15"; "4"] :=
-      eq_refl.
-
-    Definition test_space_padded_day :
-      List.map Print.space_padded_day
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s [" 5"; " 3"; "15"; " 4"] :=
-      eq_refl.
-
-    Definition test_zero_padded_day :
-      List.map Print.zero_padded_day
-        [New 2014 5 5 ; New 1 2 3; New (-0) 1 15; New (-1) 12 4] =
-        List.map LString.s ["05"; "03"; "15"; "04"] :=
+      List.map_pair Print.day [
+        (None, New 2014 5 5);
+        (None, New 1 2 3);
+        (None, New (-0) 1 15);
+        (None, New (-1) 12 4);
+        (Some " "%char, New 2014 5 5);
+        (Some " "%char, New 1 2 3);
+        (Some " "%char, New (-0) 1 15);
+        (Some " "%char, New (-1) 12 4);
+        (Some "0"%char, New 2014 5 5);
+        (Some "0"%char, New 1 2 3);
+        (Some "0"%char, New (-0) 1 15);
+        (Some "0"%char, New (-1) 12 4)] = List.map LString.s [
+        "5"; "3"; "15"; "4";
+        " 5"; " 3"; "15"; " 4";
+        "05"; "03"; "15"; "04"] :=
       eq_refl.
 
     Definition test_full_week_day :
@@ -522,7 +512,7 @@ Module Test.
       List.map Print.short_month [New 2014 10 24; New 2014 10 25; New 0 1 1] =
         List.map LString.s ["Oct"; "Oct"; "Jan"] :=
       eq_refl.
-    
+
     Definition test_date :
       List.map Print.date [New 2014 10 24; New 2014 10 25; New 0 1 1] =
         List.map LString.s ["2014-10-24"; "2014-10-25"; "0000-01-01"] :=
