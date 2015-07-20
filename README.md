@@ -1,5 +1,5 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/watch-48.png) Moment
-Parse, manipulate and pretty-print dates in Coq.
+Parse, manipulate and pretty-print times and dates in Coq.
 
     Require Import Coq.Strings.String.
     Require Import FunctionNinjas.All.
@@ -16,11 +16,11 @@ gives:
 ### With OPAM
 Add the Coq repository:
 
-    opam repo add coq-stable https://github.com/coq/repo-stable.git
+    opam repo add coq-released https://coq.inria.fr/opam/released
 
 and run:
 
-    opam install coq:moment
+    opam install -j4 coq:moment
 
 ### From the sources
 Run:
