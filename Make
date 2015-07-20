@@ -1,7 +1,7 @@
 -R . Moment
 
-All.v
-Date.v
-Moment.v
-TestHelpers.v
-Time.v
+src/All.v
+src/Date.v
+src/Moment.v
+src/TestHelpers.v
+src/Time.v
