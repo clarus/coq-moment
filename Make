@@ -1,4 +1,4 @@
--R . Moment
+-R src Moment
 
 src/All.v
 src/Date.v
