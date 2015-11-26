@@ -14,13 +14,13 @@ gives:
 
 ## Install
 ### With OPAM
-Add the Coq repository:
+Add the [Coq repository](coq.io/opam/):
 
     opam repo add coq-released https://coq.inria.fr/opam/released
 
 and run:
 
-    opam install -j4 coq:moment
+    opam install coq-moment
 
 ### From the sources
 Run:
