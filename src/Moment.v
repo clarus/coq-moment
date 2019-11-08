@@ -99,14 +99,16 @@ Module Test.
         "2017-02-21T15:09:03-00:00";
         "2017-02-21T15:09:03+01:00";
         "2017-02-21T15:09:03-12:00";
-        "2017-02-21T15:09:03-16:00"
+        "2017-02-21T15:09:03-16:00";
+        "2017-0221T15:09:03-16:00"
       ]) = [
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "...");
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 16 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 3 9 3), LString.s "");
-        Some (New (Date.New 2017 2 20) (Time.New 23 9 3), LString.s "")
+        Some (New (Date.New 2017 2 20) (Time.New 23 9 3), LString.s "");
+        None
       ] :=
       eq_refl.
   End Parse.
