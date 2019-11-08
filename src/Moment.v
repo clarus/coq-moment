@@ -74,7 +74,6 @@ Module Test.
     eq_refl.
 
   Module Print.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_rfc1123 :
@@ -89,7 +88,6 @@ Module Test.
   End Print.
 
   Module Parse.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_rfc3339 :

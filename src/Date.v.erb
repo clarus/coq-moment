@@ -6,6 +6,7 @@ Require Import Coq.ZArith.ZArith.
 Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
+Require TestHelpers.
 Require Util.
 
 Import ListNotations.
@@ -282,7 +283,7 @@ End Parse.
 
 (** Tests for this file. *)
 Module Test.
-  Require Import TestHelpers.
+  Import TestHelpers.
 
   Definition test_compare :
     List.map_pair compare [
@@ -335,7 +336,6 @@ Module Test.
       eq_refl.
 
     Module Print.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -352,7 +352,6 @@ Module Test.
     End Print.
 
     Module Parse.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -390,7 +389,6 @@ Module Test.
       eq_refl.
 
     Module Print.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -407,7 +405,6 @@ Module Test.
     End Print.
 
     Module Parse.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -429,8 +426,6 @@ Module Test.
   End Month.
 
   Module Print.
-    Require Import Coq.Strings.Ascii.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_year :
@@ -519,7 +514,6 @@ Module Test.
   End Print.
 
   Module Parse.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_zero_padded_year :
