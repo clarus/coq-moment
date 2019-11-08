@@ -1,6 +1,7 @@
 opam*/
 Makefile
 Makefile.bak
+Makefile.conf
 Date.v
 .opam
 *.d
