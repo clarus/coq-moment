@@ -3,6 +3,7 @@ Require Import Coq.Lists.List.
 Require Import Coq.Strings.Ascii.
 Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith.
+Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
 Require Date.
@@ -40,6 +41,21 @@ Module Print.
     LString.s " GMT".
 End Print.
 
+(** Parsing. *)
+Module Parse.
+  (** Parse a moment in RFC 3339 format, like 2002-10-02T15:00:00Z. We ignore
+      the optional decimal part of the seconds. *)
+  Definition rfc3339 (s : LString.t) : option (t * LString.t) :=
+    Option.bind (Date.Parse.date s) (fun date_s =>
+    let (date, s) := date_s in
+    Option.bind (Util.eat_character "T" s) (fun s =>
+    Option.bind (Time.Parse.time s) (fun time_s =>
+    let (time, s) := time_s in
+    Option.bind (Util.eat_character "Z" s) (fun s =>
+    Some ({| date := date; time := time |}, s)
+    )))).
+End Parse.
+
 (** Tests for this file. *)
 Module Test.
   Definition test_of_epoch :
@@ -71,4 +87,17 @@ Module Test.
         "Fri, 24 Oct 2014 15:40:37 GMT"] :=
       eq_refl.
   End Print.
+
+  Module Parse.
+    Require Import Coq.Strings.String.
+    Local Open Scope string.
+
+    Definition test_rfc3339 :
+      List.map Parse.rfc3339 (List.map LString.s [
+        "2017-02-21T15:09:03Z..."
+      ]) = [
+        Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "...")
+      ] :=
+      eq_refl.
+  End Parse.
 End Test.

@@ -3,8 +3,10 @@ Require Import Coq.Lists.List.
 Require Import Coq.Strings.Ascii.
 Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith.
+Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
+Require Util.
 
 Import ListNotations.
 Local Open Scope char.
@@ -53,6 +55,22 @@ Module Print.
     minute (Some "0") time ++ LString.s ":" ++
     second (Some "0") time.
 End Print.
+
+(** Parsing. *)
+Module Parse.
+  (** Parse a time in the format hh:mm:ss. *)
+  Definition time (s : LString.t) : option (t * LString.t) :=
+    Option.bind (Util.parse_padded_integer 2 s) (fun hour_s =>
+    let (hour, s) := hour_s in
+    Option.bind (Util.eat_character ":" s) (fun s =>
+    Option.bind (Util.parse_padded_integer 2 s) (fun minute_s =>
+    let (minute, s) := minute_s in
+    Option.bind (Util.eat_character ":" s) (fun s =>
+    Option.bind (Util.parse_padded_integer 2 s) (fun second_s =>
+    let (second, s) := second_s in
+    Some ({| hour := hour; minute := minute; second := second |}, s)
+    ))))).
+End Parse.
 
 (** Tests for this file. *)
 Module Test.
@@ -129,4 +147,20 @@ Module Test.
         List.map LString.s ["00:00:00"; "15:22:29"; "15:22:30"] :=
       eq_refl.
   End Print.
+
+  Module Parsing.
+    Local Open Scope string.
+
+    Definition test_time :
+      List.map Parse.time (List.map LString.s [
+        "00:00:00";
+        "15:22:29";
+        "15:22:30"
+      ]) = [
+        Some (New 0 0 0, LString.s "");
+        Some (New 15 22 29, LString.s "");
+        Some (New 15 22 30, LString.s "")
+      ] :=
+      eq_refl.
+  End Parsing.
 End Test.
