@@ -1,6 +1,7 @@
 (** Time in a day. *)
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.Ascii.
+Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.

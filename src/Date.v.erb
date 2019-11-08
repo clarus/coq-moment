@@ -1,6 +1,7 @@
 (** Date: day in a calendar. *)
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.Ascii.
+Require Import Coq.Strings.String.
 Require Import Coq.ZArith.ZArith.
 Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
@@ -9,6 +10,7 @@ Require Import ListString.All.
 Import ListNotations.
 Local Open Scope Z.
 Local Open Scope char.
+(*Local Open Scope string.*)
 
 (** A date is a year, a month and a day. There is no enforced bound by the type
     system for the month and the day number, but values are expected to be in
