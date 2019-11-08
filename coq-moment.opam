@@ -1,0 +1,31 @@
+version: "dev"
+
+opam-version: "2.0"
+maintainer: "dev@clarus.me"
+homepage: "https://github.com/clarus/coq-moment"
+dev-repo: "git+https://github.com/clarus/coq-moment.git"
+bug-reports: "https://github.com/clarus/coq-moment/issues"
+authors: ["Guillaume Claret"]
+license: "MIT"
+build: [
+  ["ruby" "pp.rb"]
+  ["./configure.sh"]
+  [make "-j%{jobs}%"]
+]
+install: [
+  [make "install"]
+]
+depends: [
+  "conf-ruby" {build}
+  "coq" {>= "8.4pl4" & < "8.9~"}
+  "coq-error-handlers"
+  "coq-function-ninjas"
+  "coq-list-string" {>= "2.0.0"}
+  "ocaml"
+]
+tags: [
+  "keyword:date"
+  "keyword:time"
+  "logpath:Moment"
+]
+synopsis: "Parse, manipulate and pretty-print times and dates in Coq"
