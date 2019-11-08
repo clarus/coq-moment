@@ -6,6 +6,7 @@ Require Import Coq.ZArith.ZArith.
 Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
+Require TestHelpers.
 Require Util.
 
 Import ListNotations.
@@ -70,11 +71,43 @@ Module Parse.
     let (second, s) := second_s in
     Some ({| hour := hour; minute := minute; second := second |}, s)
     ))))).
+  
+  (** Parse a time zone offset, +hh:mm or -hh:mm. *)
+  Definition time_zone_offset (s : LString.t) : option (t * LString.t) :=
+    let offset (s : LString.t) : option (t * LString.t) :=
+      Option.bind (Util.parse_padded_integer 2 s) (fun hour_s =>
+      let (hour, s) := hour_s in
+      Option.bind (Util.eat_character ":" s) (fun s =>
+      Option.bind (Util.parse_padded_integer 2 s) (fun minute_s =>
+      let (minute, s) := minute_s in
+      Some ({| hour := hour; minute := minute; second := 0 |}, s)
+      ))) in
+    match s with
+    | "Z" :: s => Some ({| hour := 0; minute := 0; second := 0 |}, s)
+    | "+" :: s =>
+      Option.bind (offset s) (fun offset_s =>
+      let (offset, s) := offset_s in
+      Some (offset, s)
+      )
+    | "-" :: s =>
+      Option.bind (offset s) (fun offset_s =>
+      let (offset, s) := offset_s in
+      Some (
+        {|
+          hour := - offset.(hour);
+          minute := - offset.(minute);
+          second := - offset.(second)
+        |},
+        s
+      )
+      )
+    | _ => None
+    end.
 End Parse.
 
 (** Tests for this file. *)
 Module Test.
-  Require Import TestHelpers.
+  Import TestHelpers.
 
   Definition test_of_seconds :
     List.map of_seconds [0; 1414164149; 1414164150] =
@@ -87,8 +120,6 @@ Module Test.
     eq_refl.
 
   Module Print.
-    Require Import Coq.Strings.Ascii.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_hour :
