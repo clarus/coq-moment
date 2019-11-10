@@ -1,6 +1,8 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/watch-48.png) Moment
 > Parse, manipulate and pretty-print times and dates in Coq.
 
+[![Build Status](https://travis-ci.com/clarus/coq-moment.svg?branch=master)](https://travis-ci.com/clarus/coq-moment)
+
     Require Import Coq.Strings.String.
     Require Import FunctionNinjas.All.
     Require Import ListString.All.
@@ -104,3 +106,6 @@ at the beginning of your source files. It will add three new modules:
 
 ### Moment.Print
 * `rfc1123 (moment : t) : LString.t` The moment in the RFC 1123 format, like `Sun, 06 Nov 1994 08:49:37 GMT`.
+
+### Moment.Parse
+* `rfc3339 (moment : t) : LString.t` Parse a moment in RFC 3339 format, like `2002-10-02T15:00:00Z`. We ignore the optional decimal part of the seconds..

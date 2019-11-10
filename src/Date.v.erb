@@ -6,11 +6,12 @@ Require Import Coq.ZArith.ZArith.
 Require Import ErrorHandlers.All.
 Require Import FunctionNinjas.All.
 Require Import ListString.All.
+Require TestHelpers.
+Require Util.
 
 Import ListNotations.
 Local Open Scope Z.
 Local Open Scope char.
-(*Local Open Scope string.*)
 
 (** A date is a year, a month and a day. There is no enforced bound by the type
     system for the month and the day number, but values are expected to be in
@@ -254,38 +255,35 @@ End Print.
 
 (** Parsing. *)
 Module Parse.
-  Fixpoint split (length : nat) (s : LString.t) : option (LString.t * LString.t) :=
-    match length with
-    | O => Some ([], s)
-    | S length =>
-      match s with
-      | [] => None
-      | c :: s =>
-        Option.bind (split length s) (fun result =>
-        let (s1, s2) := result in
-        Some (c :: s1, s2))
-      end
-    end.
-
   (** Parse a year with a fixed number of digits. *)
   Definition zero_padded_year (digits : nat) (s : LString.t) : option (Z * LString.t) :=
-    Option.bind (split digits s) (fun x =>
-    let (year, s) := x in
-    Option.bind (LString.to_N 10 year) (fun year =>
-    Some (Z.of_N year, s))).
+    Util.parse_padded_integer digits s.
 
   (** Parse a month number with two digits. *)
   Definition zero_padded_month (s : LString.t) : option (Z * LString.t) :=
-    zero_padded_year 2 s.
+    Util.parse_padded_integer 2 s.
 
   (** Parse a day number with two digits. *)
   Definition zero_padded_day (s : LString.t) : option (Z * LString.t) :=
-    zero_padded_year 2 s.
+    Util.parse_padded_integer 2 s.
+
+  (** Parse a date in the format yyyy-mm-dd. *)
+  Definition date (s : LString.t) : option (t * LString.t) :=
+    Option.bind (zero_padded_year 4 s) (fun year_s =>
+    let (year, s) := year_s in
+    Option.bind (Util.eat_character "-" s) (fun s =>
+    Option.bind (zero_padded_month s) (fun month_s =>
+    let (month, s) := month_s in
+    Option.bind (Util.eat_character "-" s) (fun s =>
+    Option.bind (zero_padded_day s) (fun day_s =>
+    let (day, s) := day_s in
+    Some ({| year := year; month := month; day := day |}, s)
+    ))))).
 End Parse.
 
 (** Tests for this file. *)
 Module Test.
-  Require Import TestHelpers.
+  Import TestHelpers.
 
   Definition test_compare :
     List.map_pair compare [
@@ -338,7 +336,6 @@ Module Test.
       eq_refl.
 
     Module Print.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -355,7 +352,6 @@ Module Test.
     End Print.
 
     Module Parse.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -393,7 +389,6 @@ Module Test.
       eq_refl.
 
     Module Print.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -410,7 +405,6 @@ Module Test.
     End Print.
 
     Module Parse.
-      Require Import Coq.Strings.String.
       Local Open Scope string.
 
       Definition test_full :
@@ -432,8 +426,6 @@ Module Test.
   End Month.
 
   Module Print.
-    Require Import Coq.Strings.Ascii.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_year :
@@ -522,7 +514,6 @@ Module Test.
   End Print.
 
   Module Parse.
-    Require Import Coq.Strings.String.
     Local Open Scope string.
 
     Definition test_zero_padded_year :
@@ -571,6 +562,18 @@ Module Test.
         None;
         None;
         None] :=
+      eq_refl.
+
+    Definition test_date :
+      List.map Parse.date @@ List.map LString.s [
+        "2014-10-24";
+        "2014-10-25";
+        "0000-01-01"
+      ] = [
+        Some (New 2014 10 24, LString.s "");
+        Some (New 2014 10 25, LString.s "");
+        Some (New 0 1 1, LString.s "")
+      ] :=
       eq_refl.
   End Parse.
 End Test.
