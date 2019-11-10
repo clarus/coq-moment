@@ -1,6 +1,8 @@
 # ![Logo](https://raw.githubusercontent.com/clarus/icons/master/watch-48.png) Moment
 > Parse, manipulate and pretty-print times and dates in Coq.
 
+[![Build Status](https://travis-ci.com/clarus/coq-moment.svg?branch=master)](https://travis-ci.com/clarus/coq-moment)
+
     Require Import Coq.Strings.String.
     Require Import FunctionNinjas.All.
     Require Import ListString.All.
