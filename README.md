@@ -87,6 +87,7 @@ at the beginning of your source files. It will add three new modules:
 * `zero_padded_year (digits : nat) (s : LString.t) : option (Z * LString.t)` Parse a year with a fixed number of digits.
 * `zero_padded_month (s : LString.t) : option (Z * LString.t)` Parse a month number with two digits.
 * `zero_padded_day (s : LString.t) : option (Z * LString.t)` Parse a day number with two digits.
+* `date (s : LString.t) : option (t * LString.t)` Parse a date in the format yyyy-mm-dd.
 
 ### Time
 * `t` A time is an hour, a minute and a second. There is no enforced bound by the type system, but values are expected to be in the standard range.
@@ -98,6 +99,10 @@ at the beginning of your source files. It will add three new modules:
 * `minute (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the minute number, with an optional padding to be of width two.
 * `second (padding : option Ascii.ascii) (time : t) : LString.t` Pretty-print the second number, with an optional padding to be of width two.
 * `time (time : t) : LString.t` The time in the format hh:mm:ss.
+
+### Time.Parse
+* `time (s : LString.t) : option (t * LString.t)` Parse a time in the format hh:mm:ss.
+* `time_zone_offset (s : LString.t) : option (t * LString.t)` Parse a time zone offset, +hh:mm or -hh:mm.
 
 ### Moment
 * `t` A moment is a date and a time.
