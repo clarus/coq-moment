@@ -39,6 +39,11 @@ Module Print.
     Date.Print.year 4 (Some "0") (date moment) ++ LString.s " " ++
     Time.Print.time (time moment) ++
     LString.s " GMT".
+
+  (** The moment in the RFC 3339 format, like `2002-10-02T15:00:00Z`. *)
+  Definition rfc3339 (moment : t) : LString.t :=
+    Date.Print.date (date moment) ++ LString.s "T" ++
+    Time.Print.time (time moment) ++ LString.s "Z".
 End Print.
 
 (** Parsing. *)
@@ -86,6 +91,16 @@ Module Test.
         "Thu, 01 Jan 1970 00:00:00 GMT";
         "Sun, 06 Nov 1994 08:49:37 GMT";
         "Fri, 24 Oct 2014 15:40:37 GMT"] :=
+      eq_refl.
+
+    Definition test_rfc3339 :
+      List.map Print.rfc3339 [
+        New (Date.New 1970 1 1) (Time.New 0 0 0);
+        New (Date.New 1994 11 6) (Time.New 8 49 37);
+        New (Date.New 2014 10 24) (Time.New 15 40 37)] = List.map LString.s [
+        "1970-01-01T00:00:00Z";
+        "1994-11-06T08:49:37Z";
+        "2014-10-24T15:40:37Z"] :=
       eq_refl.
   End Print.
 
