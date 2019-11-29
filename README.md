@@ -3,16 +3,18 @@
 
 [![Build Status](https://travis-ci.com/clarus/coq-moment.svg?branch=master)](https://travis-ci.com/clarus/coq-moment)
 
-    Require Import Coq.Strings.String.
-    Require Import FunctionNinjas.All.
-    Require Import ListString.All.
-    Require Import Moment.All.
+Example:
+```coq
+Require Import Coq.Strings.String.
+Require Import ListString.All.
+Require Import Moment.All.
 
-    Compute LString.to_string @@ Moment.Print.rfc1123 @@ Moment.of_epoch 0.
-
+Compute LString.to_string (Moment.Print.rfc1123 (Moment.of_epoch 0)).
+```
 gives:
-    
-    "Thu, 01 Jan 1970 00:00:00 GMT"%string
+```coq
+"Thu, 01 Jan 1970 00:00:00 GMT"%string
+```
 
 ## Install
 ### With opam
