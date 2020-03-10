@@ -116,4 +116,4 @@ at the beginning of your source files. It will add three new modules:
 * `rfc3339 (moment : t) : LString.t` The moment in the RFC 3339 format, like `2002-10-02T15:00:00Z`.
 
 ### Moment.Parse
-* `rfc3339 (moment : t) : LString.t` Parse a moment in RFC 3339 format, like `2002-10-02T15:00:00Z`. We ignore the optional decimal part of the seconds.
+* `rfc3339 (s : LString.t) : option (t * LString.t)` Parse a moment in RFC 3339 format, like `2002-10-02T15:00:00Z`. We ignore the optional decimal part of the seconds.
