@@ -71,9 +71,30 @@ Module Parse.
     let (second, s) := second_s in
     Some ({| hour := hour; minute := minute; second := second |}, s)
     ))))).
-  
-  (** Parse a time zone offset, +hh:mm or -hh:mm. *)
-  Definition time_zone_offset (s : LString.t) : option (t * LString.t) :=
+
+  Module TimeZoneKind.
+    Inductive t : Set :=
+    | Z
+    | Plus
+    | Minus.
+
+    Definition parse (s : LString.t) (strict : bool)
+      : option (t * LString.t) :=
+      match s with
+      | "Z" :: s => Some (Z, s)
+      | "z" :: s =>
+        if negb strict then
+          Some (Z, s)
+        else
+          None
+      | "+" :: s => Some (Plus, s)
+      | "-" :: s => Some (Minus, s)
+      | _ => None
+      end.
+  End TimeZoneKind.
+
+  Definition time_zone_offset_generic (s : LString.t) (strict : bool)
+    : option (t * LString.t) :=
     let offset (s : LString.t) : option (t * LString.t) :=
       Option.bind (Util.parse_padded_integer 2 s) (fun hour_s =>
       let (hour, s) := hour_s in
@@ -82,14 +103,15 @@ Module Parse.
       let (minute, s) := minute_s in
       Some ({| hour := hour; minute := minute; second := 0 |}, s)
       ))) in
-    match s with
-    | "Z" :: s => Some ({| hour := 0; minute := 0; second := 0 |}, s)
-    | "+" :: s =>
+    Option.bind (TimeZoneKind.parse s strict) (fun time_zone_kind_s =>
+    let (time_zone_kind, s) := time_zone_kind_s in
+    match time_zone_kind with
+    | TimeZoneKind.Z => Some ({| hour := 0; minute := 0; second := 0 |}, s)
+    | TimeZoneKind.Plus =>
       Option.bind (offset s) (fun offset_s =>
       let (offset, s) := offset_s in
-      Some (offset, s)
-      )
-    | "-" :: s =>
+      Some (offset, s))
+    | TimeZoneKind.Minus =>
       Option.bind (offset s) (fun offset_s =>
       let (offset, s) := offset_s in
       Some (
@@ -99,10 +121,17 @@ Module Parse.
           second := - offset.(second)
         |},
         s
-      )
-      )
-    | _ => None
-    end.
+      ))
+    end).
+
+  (** Parse a time zone offset, Z, +hh:mm or -hh:mm. *)
+  Definition time_zone_offset (s : LString.t) : option (t * LString.t) :=
+    time_zone_offset_generic s true.
+
+  (** Parse a time zone offset, Z, z, +hh:mm or -hh:mm. *)
+  Definition time_zone_offset_non_strict (s : LString.t)
+    : option (t * LString.t) :=
+    time_zone_offset_generic s false.
 End Parse.
 
 (** Tests for this file. *)

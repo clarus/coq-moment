@@ -104,7 +104,8 @@ at the beginning of your source files. It will add three new modules:
 
 ### Time.Parse
 * `time (s : LString.t) : option (t * LString.t)` Parse a time in the format hh:mm:ss.
-* `time_zone_offset (s : LString.t) : option (t * LString.t)` Parse a time zone offset, +hh:mm or -hh:mm.
+* `time_zone_offset (s : LString.t) : option (t * LString.t)` Parse a time zone offset, Z, +hh:mm or -hh:mm.
+* `time_zone_offset_non_strict (s : LString.t) : option (t * LString.t)` Parse a time zone offset, Z, z, +hh:mm or -hh:mm.
 
 ### Moment
 * `t` A moment is a date and a time.
@@ -117,3 +118,4 @@ at the beginning of your source files. It will add three new modules:
 
 ### Moment.Parse
 * `rfc3339 (s : LString.t) : option (t * LString.t)` Parse a moment in RFC 3339 format, like `2002-10-02T15:00:00Z`. We ignore the optional decimal part of the seconds.
+* `rfc3339_non_strict (s : LString.t) : option (t * LString.t)` Parse a moment in RFC 3339 format. We also allow `"t"` and `" "` as date/time separator, and `"z"` as time zone.
