@@ -6,6 +6,8 @@ Date.v
 .opam
 *.d
 *.vo
+*.vok
+*.vos
 *.glob
 *.v.d
 *.aux
