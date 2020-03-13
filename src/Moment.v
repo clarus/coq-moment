@@ -48,19 +48,33 @@ End Print.
 
 (** Parsing. *)
 Module Parse.
-  (** Parse a moment in RFC 3339 format, like 2002-10-02T15:00:00Z. We ignore
-      the optional decimal part of the seconds. *)
-  Definition rfc3339 (s : LString.t) : option (t * LString.t) :=
+  Definition rfc3339_generic (s : LString.t) (strict : bool)
+    : option (t * LString.t) :=
     Option.bind (Date.Parse.date s) (fun date_s =>
     let (date, s) := date_s in
-    Option.bind (Util.eat_character "T" s) (fun s =>
+    let separators :=
+      if strict then
+        ["T"]
+      else
+        ["T"; "t"; " "] in
+    Option.bind (Util.eat_character_in_list separators s) (fun s =>
     Option.bind (Time.Parse.time s) (fun time_s =>
     let (time, s) := time_s in
-    Option.bind (Time.Parse.time_zone_offset s) (fun time_zone_offset_s =>
+    Option.bind (Time.Parse.time_zone_offset_generic s strict) (fun time_zone_offset_s =>
     let (time_zone_offset, s) := time_zone_offset_s in
     let moment := {| date := date; time := time |} in
     Some (of_epoch (to_epoch moment + Time.to_seconds time_zone_offset), s)
     )))).
+
+  (** Parse a moment in RFC 3339 format, like 2002-10-02T15:00:00Z. We ignore
+      the optional decimal part of the seconds. *)
+  Definition rfc3339 (s : LString.t) : option (t * LString.t) :=
+    rfc3339_generic s true.
+
+  (** Parse a moment in RFC 3339 format. We also allow `t` and ` ` as date/time
+      separator, and `z` as time zone. *)
+  Definition rfc3339_non_strict (s : LString.t) : option (t * LString.t) :=
+    rfc3339_generic s false.
 End Parse.
 
 (** Tests for this file. *)
@@ -107,23 +121,40 @@ Module Test.
   Module Parse.
     Local Open Scope string.
 
+    Definition rfc3339_inputs := [
+      "2017-02-21T15:09:03Z...";
+      "2017-02-21T15:09:03+00:00";
+      "2017-02-21T15:09:03-00:00";
+      "2017-02-21T15:09:03+01:00";
+      "2017-02-21T15:09:03-12:00";
+      "2017-02-21T15:09:03-16:00";
+      "2017-0221T15:09:03-16:00";
+      "2017-02-21 15:09:03-16:00"
+    ].
+
     Definition test_rfc3339 :
-      List.map Parse.rfc3339 (List.map LString.s [
-        "2017-02-21T15:09:03Z...";
-        "2017-02-21T15:09:03+00:00";
-        "2017-02-21T15:09:03-00:00";
-        "2017-02-21T15:09:03+01:00";
-        "2017-02-21T15:09:03-12:00";
-        "2017-02-21T15:09:03-16:00";
-        "2017-0221T15:09:03-16:00"
-      ]) = [
+      List.map Parse.rfc3339 (List.map LString.s rfc3339_inputs) = [
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "...");
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 16 9 3), LString.s "");
         Some (New (Date.New 2017 2 21) (Time.New 3 9 3), LString.s "");
         Some (New (Date.New 2017 2 20) (Time.New 23 9 3), LString.s "");
+        None;
         None
+      ] :=
+      eq_refl.
+
+    Definition test_rfc3339_non_strict :
+      List.map Parse.rfc3339_non_strict (List.map LString.s rfc3339_inputs) = [
+        Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "...");
+        Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
+        Some (New (Date.New 2017 2 21) (Time.New 15 9 3), LString.s "");
+        Some (New (Date.New 2017 2 21) (Time.New 16 9 3), LString.s "");
+        Some (New (Date.New 2017 2 21) (Time.New 3 9 3), LString.s "");
+        Some (New (Date.New 2017 2 20) (Time.New 23 9 3), LString.s "");
+        None;
+        Some (New (Date.New 2017 2 20) (Time.New 23 9 3), LString.s "")
       ] :=
       eq_refl.
   End Parse.

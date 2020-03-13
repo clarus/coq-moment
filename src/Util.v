@@ -15,6 +15,17 @@ Definition eat_character (character : Ascii.ascii) (s : LString.t) : option LStr
       None
   end.
 
+Fixpoint eat_character_in_list (characters : list Ascii.ascii) (s : LString.t)
+  : option LString.t :=
+  match characters with
+  | [] => None
+  | character :: characters =>
+    match eat_character character s with
+    | None => eat_character_in_list characters s
+    | Some s => Some s
+    end
+  end.
+
 (** Split a string after [length] characters. *)
 Fixpoint split (length : nat) (s : LString.t) : option (LString.t * LString.t) :=
   match length with
