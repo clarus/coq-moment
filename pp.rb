@@ -2,7 +2,7 @@
 require 'erb'
 
 # The version of Coq.
-version = `coqc -v`.match(/version ([^(]*) \(/)[1]
+version = `coqc -v`.match(/version (\S+)/)[1]
 
 Dir.glob("src/*.v.erb") do |file_name|
   renderer = ERB.new(File.read(file_name, encoding: "UTF-8"))
